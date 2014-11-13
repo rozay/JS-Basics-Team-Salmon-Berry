@@ -75,22 +75,12 @@ function createEnemy()
         outOfBounds: function () {
             if (this.positionY < 0)
                 this.positionY = 0;
-            else if (this.positionY + this.height > canvas.heigt)
+            else if (this.positionY > canvas.heigt - this.height)
                 this.positionY = canvas.height - this.height;
             if (this.positionX < 0 - this.width) {
                 this.positionY = Math.round(Math.random() * canvas.height);
                 this.positionX = canvas.width + 80;
             }
-
-            //outOfBounds: function () {
-            //    if (this.positionX < 0)
-            //        this.positionX = 0;
-            //    else if (this.positionX + this.width > canvas.width)
-            //        this.positionX = canvas.width - this.width;
-            //    if (this.positionY > canvas.height + this.height) {
-            //        this.positionX = Math.round(Math.random() * canvas.width);
-            //        this.positionY = -65;
-            //}
         }
     }
     return enemy;
