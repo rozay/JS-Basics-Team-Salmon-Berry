@@ -4,7 +4,7 @@ function init(e) {
     canvas.canvasElement.height = canvas.height;
     canvas.canvasContext = canvas.canvasElement.getContext('2d');
     canvas.background.src = 'resources/background.jpg';
-    
+    player.playerImage.src = 'resources/player.png';
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
 }
@@ -15,7 +15,7 @@ var canvas = {
         canvasElement : document.getElementById('canvas'),
         canvasContext : undefined,
         width : 1024,
-        height: 768,
+        height: 620,
         background : new Image()
     }
 var player = {
@@ -23,6 +23,7 @@ var player = {
     positionY : 0,
     width : 50,
     height : 50,
+    playerImage : new Image(),
     movingRight : false,
     movingLeft : false,
     movingUp : false,
@@ -30,7 +31,7 @@ var player = {
     speed : 3,
     draw : function() {
         canvas.canvasContext.fillStyle = "#f0f";
-        canvas.canvasContext.fillRect(this.positionX,this.positionY, this.width, this.height);
+        canvas.canvasContext.drawImage(player.playerImage, player.positionX, player.positionY);
     }
 }
 
