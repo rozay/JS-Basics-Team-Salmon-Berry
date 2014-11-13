@@ -4,8 +4,8 @@
     canvas.canvasElement.width = canvas.width;
     canvas.canvasElement.height = canvas.height;
     canvas.canvasContext = canvas.canvasElement.getContext('2d');
-    canvas.background.src = 'resources/background.jpg';
-    player.playerImage.src = 'resources/player.png';
+    canvas.background.src = 'resources/bg/background.jpg';
+    player.playerImage.src = 'resources/player/main.png';
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
 }
@@ -31,8 +31,8 @@ var gamePlay = {
 var player = {
     positionX : 0,
     positionY : 0,
-    width : 65,
-    height : 40,
+    width : 60,
+    height : 75,
     playerImage: new Image(),
     movingRight : false,
     movingLeft : false,
