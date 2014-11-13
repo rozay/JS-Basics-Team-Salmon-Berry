@@ -1,72 +1,90 @@
-﻿var canvas,
-    ctx,
-    width = 1026,
-    height = 770,
-    player1_x = (width / 2) - 25,
-    player1_y = height - 75,
-    player1_w = 50,
-    player1_h = 50;
-    rightKey = false,
-    leftKey = false,
-    upKey = false,
-    downKey = false;
-
-function clearCanvas() {
-    ctx.clearRect(0, 0, width, height);
-}
-
-function gameLoop() {
-    clearCanvas();
-    drawBoard();
-    drawPlayer();
-}
-
-function drawBoard() {
-    ctx.rect(0, 0, width, height);
-    ctx.stroke();
-    var imageBackground = new Image();
-    imageBackground.src = './/resources/background.jpg';
-    imageBackground.onload = function () {
-        ctx.drawImage(imageBackground, 1, 1);
-    };    
-}
-
-function drawPlayer() {
-    if (rightKey) player1_x += 5;
-    else if (leftKey) player1_x -= 5;
-    if (upKey) player1_y -= 5;
-    else if (downKey) player1_y += 5;
-    if (player1_x <= 0) player1_x = 0;
-    if ((player1_x + player1_w) >= width) player1_x = width - player1_w;
-    if (player1_y <= 0) player1_y = 0;
-    if ((player1_y + player1_h) >= height) player1_y = height - player1_h;
-    ctx.fillStyle = '#f2c';
-    ctx.fillRect(player1_x, player1_y, player1_w, player1_h);
-}
-
-function keyDown(e) {
-    if (e.keyCode == 39) rightKey = true;
-    else if (e.keyCode == 37) leftKey = true;
-    if (e.keyCode == 38) upKey = true;
-    else if (e.keyCode == 40) downKey = true;
-}
-
-function keyUp(e) {
-    if (e.keyCode == 39) rightKey = false;
-    else if (e.keyCode == 37) leftKey = false;
-    if (e.keyCode == 38) upKey = false;
-    else if (e.keyCode == 40) downKey = false;
-}
-
 function init(e) {
-    canvas = document.getElementById("canvas");
-    ctx = canvas.getContext("2d");
-    //drawBoard();
-    setInterval(gameLoop, 25);
-
-
+    setInterval(gameLoop, 1000 / 60);
+    canvas.canvasElement.width = canvas.width;
+    canvas.canvasElement.height = canvas.height;
+    canvas.canvasContext = canvas.canvasElement.getContext('2d');
+    canvas.background.src = 'path';
+    
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
 }
 
 window.onload = init;
+
+var canvas = {
+        canvasElement : document.getElementById('canvas'),
+        canvasContext : undefined,
+        width : 1024,
+        height: 768,
+        background : new Image()
+    }
+var player = {
+    positionX : 0,
+    positionY : 0,
+    width : 50,
+    height : 50,
+    movingRight : false,
+    movingLeft : false,
+    movingUp : false,
+    movingDown : false,
+    speed : 3,
+    draw : function() {
+        canvas.canvasContext.fillStyle = "#f0f";
+        canvas.canvasContext.fillRect(this.positionX,this.positionY, this.width, this.height);
+    }
+}
+
+function drawEverything() {
+    canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    player.draw();
+}
+
+function update() {
+    if(player.movingLeft === true)
+        player.positionX -= player.speed;
+    else if(player.movingRight === true)
+        player.positionX += player.speed;
+    if(player.movingUp === true)
+        player.positionY -= player.speed;
+    else if(player.movingDown === true)
+        player.positionY += player.speed;
+    outOfBoundsCheck();
+}
+
+function outOfBoundsCheck() {
+    if(player.positionX < 0)
+        player.positionX = 0;
+    else if(player.positionX + player.width > canvas.width)
+        player.positionX = canvas.width - player.width;
+    if(player.positionY < 0)
+        player.positionY = 0;
+    else if(player.positionY + player.height > canvas.height)
+        player.positionY = canvas.height - player.height;
+}
+
+function gameLoop() {
+    update();
+    drawEverything();
+}
+
+function keyDown(event) {
+    if (event.keyCode == 39)
+        player.movingRight = true;
+    else if (event.keyCode == 37)
+        player.movingLeft = true;
+    if (event.keyCode == 38)
+        player.movingUp = true;
+    else if (event.keyCode == 40)
+        player.movingDown = true;
+}
+
+function keyUp(e) {
+    if (event.keyCode == 39)
+        player.movingRight = false;
+    else if (event.keyCode == 37)
+        player.movingLeft = false;
+    if (event.keyCode == 38)
+        player.movingUp = false;
+    else if (event.keyCode == 40)
+        player.movingDown = false;
+}
