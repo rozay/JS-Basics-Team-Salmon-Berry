@@ -1,6 +1,6 @@
-﻿function init(e) {
+function init(e) {
+    loadResources();
     startGame();
-    setInterval(gameLoop, 1000 / 60);
     canvas.canvasElement.width = canvas.width;
     canvas.canvasElement.height = canvas.height;
     canvas.canvasContext = canvas.canvasElement.getContext('2d');
@@ -8,11 +8,22 @@
     player.playerImage.src = 'resources/player/main.png';
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
+    setInterval(gameLoop, 1000 / 60);
 }
 
 window.onload = init;
 var enemyImages = [];
 var enemyBulletImage;
+
+function loadResources()
+{
+    for(var i = 1; i <= 4;i++)
+    {
+        var tempImage = new Image();
+        tempImage.src = 'resources/enemies/enemy' + i.toString() + '.png';
+        enemyImages.push(tempImage);
+    }
+}
 
 var canvas = {
         canvasElement : document.getElementById('canvas'),
@@ -25,7 +36,7 @@ var canvas = {
 var gamePlay = {
     level: 1,
     enemiesPerLevel: 20,
-    enemies: 10
+    enemies: []
 }
 
 var player = {
@@ -59,23 +70,20 @@ function createEnemy()
         positionX: canvas.width + 80,
         positionY: Math.round(Math.random() * canvas.height) - 40,
         speed: Math.random() + gamePlay.level,      
-        enemyImage: new Image(),
         typeEnemy: 0,
         draw: function () {
-            canvas.canvasContext.drawImage(this.enemyImage, this.positionX, this.positionY);
+            canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
             this.update();
         },
         update: function () {
             this.positionX = this.positionX - this.speed;
             this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2);
-
-            
             this.outOfBounds();
         },
         outOfBounds: function () {
             if (this.positionY < 0)
                 this.positionY = 0;
-            else if (this.positionY > canvas.heigt - this.height)
+            else if (this.positionY > canvas.height - this.height)
                 this.positionY = canvas.height - this.height;
             if (this.positionX < 0 - this.width) {
                 this.positionY = Math.round(Math.random() * canvas.height) - this.height;
@@ -101,11 +109,12 @@ function createBullet()
 function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
-    player.draw();
-
-    for (var i = 0; i < gamePlay.enemies; i++) {
-        enemies['enemy' + (i + 1)].draw();     
+    
+    for (var i = 0; i < gamePlay.enemies.length; i++) {
+        gamePlay.enemies[i].draw();     
     }
+    
+    player.draw();
 }
 
 function update() {
@@ -185,12 +194,11 @@ function startGame() {
         player.score = 0;
     }
 
-    gamePlay.enemies = gamePlay.enemiesPerLevel * gamePlay.level;
+    
     player.positionX = 0;
     player.positionY = canvas.height / 2 - player.height / 2;
 
-    for (var i = 0; i < gamePlay.enemies; i++) {
-        enemies['enemy' + (i + 1)] = createEnemy();
-        enemies['enemy' + (i + 1)].enemyImage.src = 'resources/enemy.png';
+    for (var i = 0; i < gamePlay.enemiesPerLevel; i++) {
+        gamePlay.enemies.push(createEnemy());
     }
 }
