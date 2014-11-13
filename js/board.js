@@ -72,7 +72,7 @@ function createEnemy()
     var enemy = {
         hitPoint: Math.round(Math.random() * 10) + 5,
         bullets: [],
-        width: 65,
+        width: 60,
         height: 40,
         positionX: canvas.width + 80,
         positionY: Math.round(Math.random() * canvas.height) - 40,
