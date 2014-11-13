@@ -31,8 +31,8 @@ var gamePlay = {
 var player = {
     positionX : 0,
     positionY : 0,
-    width : 40,
-    height : 65,
+    width : 65,
+    height : 40,
     playerImage: new Image(),
     movingRight : false,
     movingLeft : false,
@@ -54,11 +54,11 @@ function createEnemy()
     var enemy = {
         hitPoint: Math.round(Math.random() * 10) + 5,
         bullets: [],
-        positionX: Math.round(Math.random() * canvas.width),
-        positionY: -65,
-        speed: Math.random() + gamePlay.level,
-        width: 40,
-        height: 65,
+        width: 65,
+        height: 40,
+        positionX: canvas.width + 80,
+        positionY: Math.round(Math.random() * canvas.height) - 40,
+        speed: Math.random() + gamePlay.level,      
         enemyImage: new Image(),
         typeEnemy: 0,
         draw: function () {
@@ -66,19 +66,31 @@ function createEnemy()
             this.update();
         },
         update: function () {
-            this.positionX = this.positionX; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2);
-            this.positionY = this.positionY + this.speed;
+            this.positionX = this.positionX - this.speed;
+            this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2);
+
+            
             this.outOfBounds();
         },
         outOfBounds: function () {
-            if (this.positionX < 0)
-                tempEnemy.positionX = 0;
-            else if (this.positionX + this.width > canvas.width)
-                this.positionX = canvas.width - this.width;
-            if (this.positionY > canvas.height + this.height) {
-                this.positionX = Math.round(Math.random() * canvas.width);
-                this.positionY = -65;
+            if (this.positionY < 0)
+                this.positionY = 0;
+            else if (this.positionY + this.height > canvas.heigt)
+                this.positionY = canvas.height - this.height;
+            if (this.positionX < 0 - this.width) {
+                this.positionY = Math.round(Math.random() * canvas.height);
+                this.positionX = canvas.width + 80;
             }
+
+            //outOfBounds: function () {
+            //    if (this.positionX < 0)
+            //        this.positionX = 0;
+            //    else if (this.positionX + this.width > canvas.width)
+            //        this.positionX = canvas.width - this.width;
+            //    if (this.positionY > canvas.height + this.height) {
+            //        this.positionX = Math.round(Math.random() * canvas.width);
+            //        this.positionY = -65;
+            //}
         }
     }
     return enemy;
@@ -119,14 +131,14 @@ function update() {
 }
 
 function outOfBoundsCheck() {
-    if(player.positionX < 0 - player.width)
-        player.positionX = canvas.width - player.width;
-    else if (player.positionX > canvas.width)
+    if(player.positionX < 0)
         player.positionX = 0;
-    if (player.positionY < 0)
-        player.positionY = 0;
-    else if (player.positionY + player.height > canvas.height)       
+    else if (player.positionX > canvas.width - player.width)
+        player.positionX = canvas.width - player.width;
+    if (player.positionY < 0 - player.height)
         player.positionY = canvas.height - player.height;
+    else if (player.positionY > canvas.height)       
+        player.positionY = 0;
 }
 
 function gameLoop() {
@@ -164,8 +176,8 @@ function startGame() {
     }
 
     gamePlay.enemies = gamePlay.enemiesPerLevel * gamePlay.level;
-    player.positionX = canvas.width / 2 - player.width / 2;
-    player.positionY = canvas.height - player.height;
+    player.positionX = 0;
+    player.positionY = canvas.height / 2 - player.height / 2;
 
     for (var i = 0; i < gamePlay.enemies; i++) {
         enemies['enemy' + (i + 1)] = createEnemy();
