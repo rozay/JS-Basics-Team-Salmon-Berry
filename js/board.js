@@ -10,6 +10,8 @@ function init(e) {
 }
 
 window.onload = init;
+var enemyImages = [];
+var enemyBulletImage;
 
 var canvas = {
         canvasElement : document.getElementById('canvas'),
@@ -29,10 +31,46 @@ var player = {
     movingUp : false,
     movingDown : false,
     speed : 3,
+    health : 100,
+    bullets : [],
     draw : function() {
         canvas.canvasContext.fillStyle = "#f0f";
         canvas.canvasContext.drawImage(player.playerImage, player.positionX, player.positionY);
     }
+}
+
+function createEnemy()
+{
+    var  tempEnemy = {
+        hitPoint : Math.round(Math.random() * 10) + 5;
+        bullets : [],
+        positionX : 0,
+        positionY : 0,
+        width : 0,
+        height : 0
+        typeEnemy : 0,
+        draw : function()
+        {
+            canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
+        },
+        update : function()
+        {
+            
+        }
+    }
+    return tempEnemy;
+}
+
+function createBullet()
+{
+    var tempBullet = {
+        hitPoint : 0,
+        positionX : 0,
+        positionY : 0,
+        width : 0;
+        height : 0
+    }
+    return tempBullet;
 }
 
 function drawEverything() {
