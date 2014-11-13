@@ -78,7 +78,7 @@ function createEnemy()
             else if (this.positionY > canvas.heigt - this.height)
                 this.positionY = canvas.height - this.height;
             if (this.positionX < 0 - this.width) {
-                this.positionY = Math.round(Math.random() * canvas.height);
+                this.positionY = Math.round(Math.random() * canvas.height) - this.height;
                 this.positionX = canvas.width + 80;
             }
         }
