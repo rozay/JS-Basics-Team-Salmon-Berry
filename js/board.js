@@ -3,7 +3,7 @@ function init(e) {
     canvas.canvasElement.width = canvas.width;
     canvas.canvasElement.height = canvas.height;
     canvas.canvasContext = canvas.canvasElement.getContext('2d');
-    canvas.background.src = 'path';
+    canvas.background.src = 'resources/background.jpg';
     
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
@@ -36,6 +36,7 @@ var player = {
 
 function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.canvasContext.drawImage(canvas.background, 0, 0);
     player.draw();
 }
 
