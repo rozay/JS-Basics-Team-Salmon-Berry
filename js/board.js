@@ -4,7 +4,8 @@ function init(e) {
     canvas.canvasElement.width = canvas.width;
     canvas.canvasElement.height = canvas.height;
     canvas.canvasContext = canvas.canvasElement.getContext('2d');
-    canvas.background.src = 'resources/bg/background.jpg';
+    canvas.background.src = 'resources/bg/shining.png';
+    canvas.starsLayer.src = 'resources/bg/stars.png';
     player.playerImage.src = 'resources/player/main.png';
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
@@ -30,7 +31,8 @@ var canvas = {
         canvasContext : undefined,
         width : 1024,
         height: 620,
-        background : new Image()
+        background : new Image(),
+        starsLayer : new Image()
 }
 
 var Game = {
@@ -104,7 +106,7 @@ function createBullet()
 function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
-    
+    canvas.canvasContext.drawImage(canvas.starsLayer,0,0);
     for (var i = 0; i < Game.enemies.length; i++) {
         Game.enemies[i].draw();     
     }
@@ -143,6 +145,7 @@ function outOfBoundsCheck() {
 
 function gameLoop() {
     update();
+    
     drawEverything();
 }
 
