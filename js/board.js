@@ -20,45 +20,68 @@ var canvas = {
         width : 1024,
         height: 620,
         background : new Image()
-    }
+}
+
+var gamePlay = {
+    level: 1,
+    enemiesPerLevel: 20,
+    enemies: 10
+}
+
 var player = {
     positionX : 0,
     positionY : 0,
     width : 40,
     height : 65,
-    playerImage : new Image(),
+    playerImage: new Image(),
     movingRight : false,
     movingLeft : false,
     movingUp : false,
     movingDown : false,
     speed : 3,
-    health : 100,
+    health: 100,
+    lives: 3,
     bullets : [],
     draw : function() {
-        canvas.canvasContext.drawImage(player.playerImage, player.positionX, player.positionY);
+        canvas.canvasContext.drawImage(player.playerImage, this.positionX, this.positionY);
     }
 }
 
+var enemies = {}
+
 function createEnemy()
 {
-    var  tempEnemy = {
-        hitPoint : Math.round(Math.random() * 10) + 5,
-        bullets : [],
-        positionX : 0,
-        positionY : 0,
-        width : 0,
-        height : 0,
-        typeEnemy : 0,
-        draw : function()
-        {
-            canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
+    var enemy = {
+        hitPoint: Math.round(Math.random() * 10) + 5,
+        bullets: [],
+        positionX: Math.round(Math.random() * canvas.width),
+        positionY: -65,
+        speed: Math.random() + gamePlay.level,
+        width: 40,
+        height: 65,
+        enemyImage: new Image(),
+        typeEnemy: 0,
+        draw: function () {
+            canvas.canvasContext.drawImage(this.enemyImage, this.positionX, this.positionY);
+            this.update();
         },
-        update : function()
-        {
-            
+        update: function () {
+            this.positionX = this.positionX; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2);
+            this.positionY = this.positionY + this.speed;
+            this.outOfBounds();
+        },
+        outOfBounds: function () {
+            if (this.positionX < 0)
+                tempEnemy.positionX = 0;
+            else if (this.positionX + this.width > canvas.width)
+                this.positionX = canvas.width - this.width;
+            if (this.positionY > canvas.height + this.height) {
+                this.positionX = Math.round(Math.random() * canvas.width);
+                this.positionY = -65;
+            }
         }
     }
-    return tempEnemy;
+    return enemy;
 }
 
 function createBullet()
@@ -77,6 +100,10 @@ function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
     player.draw();
+
+    for (var i = 0; i < gamePlay.enemies; i++) {
+        enemies['enemy' + (i + 1)].draw();     
+    }
 }
 
 function update() {
@@ -92,13 +119,13 @@ function update() {
 }
 
 function outOfBoundsCheck() {
-    if(player.positionX < 0)
-        player.positionX = 0;
-    else if(player.positionX + player.width > canvas.width)
+    if(player.positionX < 0 - player.width)
         player.positionX = canvas.width - player.width;
-    if(player.positionY < 0)
+    else if (player.positionX > canvas.width)
+        player.positionX = 0;
+    if (player.positionY < 0)
         player.positionY = 0;
-    else if(player.positionY + player.height > canvas.height)
+    else if (player.positionY + player.height > canvas.height)       
         player.positionY = canvas.height - player.height;
 }
 
@@ -130,8 +157,18 @@ function keyUp(e) {
 }
 
 function startGame() {
-    player.level = 1;
-    player.score = 0;
+
+    if (player.lives === 0) {
+        gamePlay.level = 1;
+        player.score = 0;
+    }
+
+    gamePlay.enemies = gamePlay.enemiesPerLevel * gamePlay.level;
     player.positionX = canvas.width / 2 - player.width / 2;
-    player.positionY = canvas.height - player.height;   
+    player.positionY = canvas.height - player.height;
+
+    for (var i = 0; i < gamePlay.enemies; i++) {
+        enemies['enemy' + (i + 1)] = createEnemy();
+        enemies['enemy' + (i + 1)].enemyImage.src = 'resources/enemy.png';
+    }
 }
