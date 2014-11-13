@@ -31,8 +31,8 @@ var gamePlay = {
 var player = {
     positionX : 0,
     positionY : 0,
-    width : 60,
-    height : 75,
+    width : 75,
+    height : 60,
     playerImage: new Image(),
     movingRight : false,
     movingLeft : false,
@@ -109,14 +109,18 @@ function drawEverything() {
 }
 
 function update() {
-    if(player.movingLeft === true)
+    if(player.movingLeft === true) {
         player.positionX -= player.speed;
-    else if(player.movingRight === true)
+    }
+    else if(player.movingRight === true) {
         player.positionX += player.speed;
-    if(player.movingUp === true)
+    }
+    if(player.movingUp === true) {
         player.positionY -= player.speed;
-    else if(player.movingDown === true)
+    }
+    else if(player.movingDown === true) {
         player.positionY += player.speed;
+    }
     outOfBoundsCheck();
 }
 
@@ -137,25 +141,41 @@ function gameLoop() {
 }
 
 function keyDown(event) {
-    if (event.keyCode == 39)
+    if (event.keyCode == 39){
         player.movingRight = true;
-    else if (event.keyCode == 37)
+        player.playerImage.src = 'resources/player/redForward.png';
+    }
+    else if (event.keyCode == 37){
         player.movingLeft = true;
-    if (event.keyCode == 38)
+        player.playerImage.src = 'resources/player/redBackwards.png';
+    }
+    if (event.keyCode == 38){
         player.movingUp = true;
-    else if (event.keyCode == 40)
+        player.playerImage.src = 'resources/player/redLeft.png';
+    }
+    else if (event.keyCode == 40){
         player.movingDown = true;
+        player.playerImage.src = 'resources/player/redRight.png';
+    }
 }
 
 function keyUp(e) {
-    if (event.keyCode == 39)
+    if (event.keyCode == 39){
         player.movingRight = false;
-    else if (event.keyCode == 37)
+        player.playerImage.src = 'resources/player/main.png';
+    }
+    else if (event.keyCode == 37){
         player.movingLeft = false;
-    if (event.keyCode == 38)
+        player.playerImage.src = 'resources/player/main.png';
+    }
+    if (event.keyCode == 38){
         player.movingUp = false;
-    else if (event.keyCode == 40)
+        player.playerImage.src = 'resources/player/main.png';
+    }
+    else if (event.keyCode == 40){
         player.movingDown = false;
+        player.playerImage.src = 'resources/player/main.png';
+    }
 }
 
 function startGame() {
