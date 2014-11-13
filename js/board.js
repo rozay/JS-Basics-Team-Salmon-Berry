@@ -33,10 +33,17 @@ var canvas = {
         background : new Image()
 }
 
-var gamePlay = {
+var Game = {
     level: 1,
     enemiesPerLevel: 20,
-    enemies: []
+    enemies: [],
+    handleCollisions : function()
+    {
+        for(var i = 0; i < this.enemies.length;i++)
+        {
+            
+        }
+    }
 }
 
 var player = {
@@ -69,26 +76,14 @@ function createEnemy()
         height: 40,
         positionX: canvas.width + 80,
         positionY: Math.round(Math.random() * canvas.height) - 40,
-        speed: Math.random() + gamePlay.level,      
-        typeEnemy: 0,
+        speed: Math.random() + Game.level,      
+        typeEnemy: Math.round(Math.random() * 3),
         draw: function () {
             canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
-            this.update();
         },
         update: function () {
             this.positionX = this.positionX - this.speed;
-            this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2);
-            this.outOfBounds();
-        },
-        outOfBounds: function () {
-            if (this.positionY < 0)
-                this.positionY = 0;
-            else if (this.positionY > canvas.height - this.height)
-                this.positionY = canvas.height - this.height;
-            if (this.positionX < 0 - this.width) {
-                this.positionY = Math.round(Math.random() * canvas.height) - this.height;
-                this.positionX = canvas.width + 80;
-            }
+            this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2);   
         }
     }
     return enemy;
@@ -110,8 +105,8 @@ function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
     
-    for (var i = 0; i < gamePlay.enemies.length; i++) {
-        gamePlay.enemies[i].draw();     
+    for (var i = 0; i < Game.enemies.length; i++) {
+        Game.enemies[i].draw();     
     }
     
     player.draw();
@@ -131,6 +126,8 @@ function update() {
         player.positionY += player.speed;
     }
     outOfBoundsCheck();
+    for(var i = 0; i < Game.enemies.length;i++)
+        Game.enemies[i].update();
 }
 
 function outOfBoundsCheck() {
@@ -190,7 +187,7 @@ function keyUp(e) {
 function startGame() {
 
     if (player.lives === 0) {
-        gamePlay.level = 1;
+        Game.level = 1;
         player.score = 0;
     }
 
@@ -198,7 +195,7 @@ function startGame() {
     player.positionX = 0;
     player.positionY = canvas.height / 2 - player.height / 2;
 
-    for (var i = 0; i < gamePlay.enemiesPerLevel; i++) {
-        gamePlay.enemies.push(createEnemy());
+    for (var i = 0; i < Game.enemiesPerLevel; i++) {
+        Game.enemies.push(createEnemy());
     }
 }
