@@ -1,4 +1,5 @@
-function init(e) {
+﻿function init(e) {
+    startGame();
     setInterval(gameLoop, 1000 / 60);
     canvas.canvasElement.width = canvas.width;
     canvas.canvasElement.height = canvas.height;
@@ -23,8 +24,8 @@ var canvas = {
 var player = {
     positionX : 0,
     positionY : 0,
-    width : 50,
-    height : 50,
+    width : 40,
+    height : 65,
     playerImage : new Image(),
     movingRight : false,
     movingLeft : false,
@@ -34,7 +35,6 @@ var player = {
     health : 100,
     bullets : [],
     draw : function() {
-        canvas.canvasContext.fillStyle = "#f0f";
         canvas.canvasContext.drawImage(player.playerImage, player.positionX, player.positionY);
     }
 }
@@ -42,12 +42,12 @@ var player = {
 function createEnemy()
 {
     var  tempEnemy = {
-        hitPoint : Math.round(Math.random() * 10) + 5;
+        hitPoint : Math.round(Math.random() * 10) + 5,
         bullets : [],
         positionX : 0,
         positionY : 0,
         width : 0,
-        height : 0
+        height : 0,
         typeEnemy : 0,
         draw : function()
         {
@@ -67,7 +67,7 @@ function createBullet()
         hitPoint : 0,
         positionX : 0,
         positionY : 0,
-        width : 0;
+        width : 0,
         height : 0
     }
     return tempBullet;
@@ -127,4 +127,11 @@ function keyUp(e) {
         player.movingUp = false;
     else if (event.keyCode == 40)
         player.movingDown = false;
+}
+
+function startGame() {
+    player.level = 1;
+    player.score = 0;
+    player.positionX = canvas.width / 2 - player.width / 2;
+    player.positionY = canvas.height - player.height;   
 }
