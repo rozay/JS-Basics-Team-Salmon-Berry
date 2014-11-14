@@ -1,17 +1,7 @@
-function init(e) {
-    loadResources();
-    startGame();
-    canvas.canvasElement.width = canvas.width;
-    canvas.canvasElement.height = canvas.height;
-    canvas.canvasContext = canvas.canvasElement.getContext('2d');
-    canvas.background.src = 'resources/bg/shining.png';
-    canvas.starsLayer.src = 'resources/bg/stars.png';
-    player.playerImage.src = 'resources/player/main.png';
-    document.addEventListener('keydown', keyDown, false);
-    document.addEventListener('keyup', keyUp, false);
-    setInterval(gameLoop, 1000 / 60);
-
-}
+window.onload = init;
+var enemyImages = [];
+var bulletImages = [];
+var bonusImages = [];
 
 var canvas = {
     canvasElement : document.getElementById('canvas'),
@@ -33,40 +23,31 @@ var canvas = {
     }
 }
 
-window.onload = init;
-var enemyImages = [];
-var bulletImages = [];
-var bonusImages = [];
-
-function loadResources()
-{
-    for(var i = 1; i <= 4;i++)
-    {
-        var tempImage = new Image();
-        tempImage.src = 'resources/enemies/enemy' + i.toString() + '.png';
-        enemyImages.push(tempImage);
-    }
-    var enemyBullet = playerBullet = doubleBullet = new Image();
-    enemyBullet.src = 'resources/bullet-enemies.png';
-    playerBullet.src = 'resources/bullet-single.png';
-    doubleBullet.src = 'resources/bullet-double.png';
-    bulletImages.push(playerBullet);
-    bulletImages.push(doubleBullet);
-    bulletImages.push(enemyBullet);
-}
-
 var Game = {
-    level: 1,
-    enemiesPerLevel: 20,
-    enemies: [],
+    level : 1,
+    enemiesPerLevel : 20,
+    enemies : [],
+    bullets : [],
+    bonuses : [],
     handleCollisions : function()
     {
         for(var i = 0; i < this.enemies.length;i++)
         {
-            
+            for(var j = 0; j < this.bullets.length;j++)
+            {
+                if(this.bullets[j].positionX + this.bullets[j].width >= this.enemies[i].positionX &&
+                  this.bullets[j].positionX <= this.enemies[i].positionX + this.enemies[i].width &&
+                  this.bullets[j].positionY + this.bullets[j].height >= this.enemies[i].positionY &&
+                  this.bullets[j].positionY <= this.enemies[i].positionY + this.enemies[i].height)
+                {
+                    this.enemies.splice(i, 1);
+                    this.bullets.splice(j, 1);
+                    console.log("hit");
+                    break;
+                }
+            }
         }
-    },
-    bonuses:[]
+    }
 }
 
 var player = {
@@ -121,7 +102,88 @@ var player = {
     }
 }
 
-var enemies = {}
+function init(e) {
+    loadResources();
+    startGame();
+    canvas.canvasElement.width = canvas.width;
+    canvas.canvasElement.height = canvas.height;
+    canvas.canvasContext = canvas.canvasElement.getContext('2d');
+    canvas.background.src = 'resources/bg/shining.png';
+    canvas.starsLayer.src = 'resources/bg/stars.png';
+    player.playerImage.src = 'resources/player/main.png';
+    document.addEventListener('keydown', keyDown, false);
+    document.addEventListener('keyup', keyUp, false);
+    setInterval(gameLoop, 1000 / 60);
+}
+
+function loadResources()
+{
+    for(var i = 1; i <= 4;i++)
+    {
+        var tempImage = new Image();
+        tempImage.src = 'resources/enemies/enemy' + i.toString() + '.png';
+        enemyImages.push(tempImage);
+    }
+    var enemyBullet = playerBullet = doubleBullet = new Image();
+    enemyBullet.src = 'resources/bullet-enemies.png';
+    playerBullet.src = 'resources/bullet-single.png';
+    doubleBullet.src = 'resources/bullet-double.png';
+    bulletImages.push(playerBullet);
+    bulletImages.push(doubleBullet);
+    bulletImages.push(enemyBullet);
+}
+
+function startGame() {
+
+    if (player.lives === 0) {
+        Game.level = 1;
+        player.score = 0;
+    }
+
+    player.positionX = 0;
+    player.positionY = canvas.height / 2 - player.height / 2;
+
+    for (var i = 0; i < Game.enemiesPerLevel; i++) {
+        Game.enemies.push(createEnemy());
+    }
+}
+
+function gameLoop() {
+    update();
+    drawEverything();
+}
+
+function update() {
+    canvas.updateStars();
+    player.update();
+    for(var i = 0; i< Game.bullets.length;i++)
+        Game.bullets[i].update();
+    for(var i = 0; i < Game.enemies.length;i++)
+        Game.enemies[i].update();
+    for (var i = 0; i < Game.bonuses.length; i++) {
+        Game.bonuses[i].update();
+        if (Game.bonuses[i].checkTime()) {
+            Game.bonuses[i].splice(i,1);
+        }
+    }
+    Game.handleCollisions();
+}
+
+function drawEverything() {
+    canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.canvasContext.drawImage(canvas.background, 0, 0);
+    canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsOneX,0);
+    canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsTwoX,0);
+    for (var i = 0; i < Game.enemies.length; i++) {
+        Game.enemies[i].draw();     
+    }
+    for (var i = 0; i < Game.bonuses.length; i++) {
+        Game.bonuses[i].draw();
+    }
+    for(var i = 0; i< Game.bullets.length;i++)
+        Game.bullets[i].draw();
+    player.draw();
+}
 
 function createEnemy()
 {
@@ -145,24 +207,24 @@ function createEnemy()
     return enemy;
 }
 
-function createBullet()
+function createBullet(ownerTag, hitPointValue, speedToApply, bulletType)
 {
     var tempBullet = {
-        hitPoint : 0,
+        hitPoint : hitPointValue,
         positionX : player.positionX + player.width,
-        positionY : player.positionY + player.height / 2,
+        positionY : player.positionY + player.height / 4,
         width : 0,
         height : 0,
-        speed : 10,
-        owner : 'player',
-        typeBullet : 0,
+        speed : speedToApply,
+        owner : ownerTag,
+        typeBullet : bulletType,
         update : function()
         {
             this.positionX += this.speed; 
         },
         outOfBoundsCheck : function()
         {
-            if(this.positionX > canvas.width)
+            if(this.positionX > canvas.width || this.positionX < 0)
                 return true;
             else
                 return false;
@@ -175,10 +237,10 @@ function createBullet()
     }
     return tempBullet;
 }
+
 function createBonus()
 {
     var bonus = {
-        bullets: [],
         width: 60,
         height: 40,
         positionX: 0,
@@ -204,38 +266,6 @@ function createBonus()
     return bonus;
 }
 
-function drawEverything() {
-    canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.canvasContext.drawImage(canvas.background, 0, 0);
-    canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsOneX,0);
-    canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsTwoX,0);
-    for (var i = 0; i < Game.enemies.length; i++) {
-        Game.enemies[i].draw();     
-    }
-    for (var i = 0; i < Game.bonuses.length; i++) {
-        Game.bonuses[i].draw();
-    }
-    player.draw();
-}
-
-function update() {
-    canvas.updateStars();
-    player.update();
-    for(var i = 0; i < Game.enemies.length;i++)
-        Game.enemies[i].update();
-    for (var i = 0; i < Game.bonuses.length; i++) {
-        Game.bonuses[i].update();
-        if (Game.bonuses[i].checkTime()) {
-            Game.bonuses[i].splice(i,1);
-        }
-    }
-}
-
-function gameLoop() {
-    update();
-    drawEverything();
-}
-
 function keyDown(event) {
     if (event.keyCode == 39){
         player.movingRight = true;
@@ -256,7 +286,7 @@ function keyDown(event) {
     
     if(event.keyCode == 88)
     {
-        player.bullets.push(createBullet());
+        Game.bullets.push(createBullet('player',10,player.speed,1));
     }
 }
 
@@ -276,20 +306,5 @@ function keyUp(e) {
     else if (event.keyCode == 40){
         player.movingDown = false;
         player.playerImage.src = 'resources/player/main.png';
-    }
-}
-
-function startGame() {
-
-    if (player.lives === 0) {
-        Game.level = 1;
-        player.score = 0;
-    }
-
-    player.positionX = 0;
-    player.positionY = canvas.height / 2 - player.height / 2;
-
-    for (var i = 0; i < Game.enemiesPerLevel; i++) {
-        Game.enemies.push(createEnemy());
     }
 }
