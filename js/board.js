@@ -42,8 +42,12 @@ var Game = {
                 {
                     this.enemies.splice(i, 1);
                     this.bullets.splice(j, 1);
-                    console.log("hit");
                     break;
+                }
+                if(this.bullets[j].positionX > canvas.width
+                  || this.bullets[j].positionX < 0)
+                {
+                    this.bullets.splice(j, 1);
                 }
             }
         }
@@ -63,7 +67,6 @@ var player = {
     speed : 3,
     health: 100,
     lives: 3,
-    bullets : [],
     draw : function() {
         for(var i in this.bullets)
             this.bullets[i].draw();
@@ -92,12 +95,7 @@ var player = {
         else if(this.movingDown === true) {
             this.positionY += this.speed;
         }     
-        for(var i in this.bullets)
-        {
-            this.bullets[i].update();
-            if(this.bullets[i].outOfBoundsCheck())
-                this.bullets.splice(i,1);
-        }
+        
         this.outOfBoundsCheck()
     }
 }
@@ -124,13 +122,15 @@ function loadResources()
         tempImage.src = 'resources/enemies/enemy' + i.toString() + '.png';
         enemyImages.push(tempImage);
     }
-    var enemyBullet = playerBullet = doubleBullet = new Image();
+    var enemyBullet = new Image();
+    var playerBullet = new Image();
+    var doubleBullet = new Image();
     enemyBullet.src = 'resources/bullet-enemies.png';
     playerBullet.src = 'resources/bullet-single.png';
     doubleBullet.src = 'resources/bullet-double.png';
     bulletImages.push(playerBullet);
     bulletImages.push(doubleBullet);
-    bulletImages.push(enemyBullet);
+    bulletImages.push(enemyBullet);  
 }
 
 function startGame() {
@@ -248,7 +248,7 @@ function createBonus()
         typeBonus: Math.round(Math.random()*2),
         disappearTime: 10,
         draw: function () {
-            canvas.canvasContext.drawImage(bonusImages[this.typeEnemy], this.positionX, this.positionY);
+            canvas.canvasContext.drawImage(bonusImages[this.typeBonus], this.positionX, this.positionY);
         },
         update: function(){
             this.disappearTime-=0.5;
@@ -286,7 +286,7 @@ function keyDown(event) {
     
     if(event.keyCode == 88)
     {
-        Game.bullets.push(createBullet('player',10,player.speed,1));
+        Game.bullets.push(createBullet('player',10,player.speed,0));
     }
 }
 
