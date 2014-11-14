@@ -12,9 +12,29 @@ function init(e) {
     setInterval(gameLoop, 1000 / 60);
 }
 
+var canvas = {
+    canvasElement : document.getElementById('canvas'),
+    canvasContext : undefined,
+    width : 1024,
+    height: 620,
+    background : new Image(),
+    starsLayer : new Image(),
+    starsOneX : 0,
+    starsTwoX : this.width,
+    updateStars : function()
+    {
+        this.starsOneX -= 2;
+        this.starsTwoX -= 2;
+        if(this.starsOneX + this.width <= 0)
+            this.starsOneX = this.width;
+        else if(this.starsTwoX + this.width <= 0)
+            this.starsTwoX = this.width;
+    }
+}
+
 window.onload = init;
 var enemyImages = [];
-var enemyBulletImage;
+var bulletImages = [];
 
 function loadResources()
 {
@@ -24,15 +44,13 @@ function loadResources()
         tempImage.src = 'resources/enemies/enemy' + i.toString() + '.png';
         enemyImages.push(tempImage);
     }
-}
-
-var canvas = {
-        canvasElement : document.getElementById('canvas'),
-        canvasContext : undefined,
-        width : 1024,
-        height: 620,
-        background : new Image(),
-        starsLayer : new Image()
+    var enemyBullet = playerBullet = doubleBullet = new Image();
+    enemyBullet.src = 'resources/bullet-enemies.png';
+    playerBullet.src = 'resources/bullet-single.png';
+    doubleBullet.src = 'resources/bullet-double.png';
+    bulletImages.push(playerBullet);
+    bulletImages.push(doubleBullet);
+    bulletImages.push(enemyBullet);
 }
 
 var Game = {
@@ -63,7 +81,39 @@ var player = {
     lives: 3,
     bullets : [],
     draw : function() {
+        for(var i in this.bullets)
+            this.bullets[i].draw();
         canvas.canvasContext.drawImage(player.playerImage, this.positionX, this.positionY);
+    },
+    outOfBoundsCheck : function() {
+        if(this.positionX < 0)
+            this.positionX = 0;
+        else if (this.positionX > canvas.width - this.width)
+            this.positionX = canvas.width - this.width;
+        if (this.positionY < 0 - this.height)
+            this.positionY = canvas.height - player.this;
+        else if (this.positionY > canvas.height)       
+            this.positionY = 0;
+    },
+    update : function() {
+        if(this.movingLeft === true) {
+            this.positionX -= this.speed;
+        }
+        else if(this.movingRight === true) {
+            this.positionX += this.speed;
+        }
+        if(this.movingUp === true) {
+            this.positionY -= this.speed;
+        }
+        else if(this.movingDown === true) {
+            this.positionY += this.speed;
+        }     
+        for(var i in this.bullets)
+        {
+            this.bullets[i].update();
+            if(this.bullets[i].outOfBoundsCheck())
+                this.bullets.splice(i,1);
+        }
     }
 }
 
@@ -95,10 +145,29 @@ function createBullet()
 {
     var tempBullet = {
         hitPoint : 0,
-        positionX : 0,
-        positionY : 0,
+        positionX : player.positionX + player.width,
+        positionY : player.positionY + player.height / 2,
         width : 0,
-        height : 0
+        height : 0,
+        speed : 10,
+        owner : 'player',
+        typeBullet : 0,
+        update : function()
+        {
+            this.positionX += this.speed; 
+        },
+        outOfBoundsCheck : function()
+        {
+            if(this.positionX > canvas.width)
+                return true;
+            else
+                return false;
+        },
+        draw : function()
+        {
+            canvas.canvasContext.drawImage(bulletImages[this.typeBullet], this.positionX, this.positionY);
+        }
+        
     }
     return tempBullet;
 }
@@ -106,7 +175,8 @@ function createBullet()
 function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
-    canvas.canvasContext.drawImage(canvas.starsLayer,0,0);
+    canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsOneX,0);
+    canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsTwoX,0);
     for (var i = 0; i < Game.enemies.length; i++) {
         Game.enemies[i].draw();     
     }
@@ -115,37 +185,14 @@ function drawEverything() {
 }
 
 function update() {
-    if(player.movingLeft === true) {
-        player.positionX -= player.speed;
-    }
-    else if(player.movingRight === true) {
-        player.positionX += player.speed;
-    }
-    if(player.movingUp === true) {
-        player.positionY -= player.speed;
-    }
-    else if(player.movingDown === true) {
-        player.positionY += player.speed;
-    }
-    outOfBoundsCheck();
+    canvas.updateStars();
+    player.update();
     for(var i = 0; i < Game.enemies.length;i++)
         Game.enemies[i].update();
 }
 
-function outOfBoundsCheck() {
-    if(player.positionX < 0)
-        player.positionX = 0;
-    else if (player.positionX > canvas.width - player.width)
-        player.positionX = canvas.width - player.width;
-    if (player.positionY < 0 - player.height)
-        player.positionY = canvas.height - player.height;
-    else if (player.positionY > canvas.height)       
-        player.positionY = 0;
-}
-
 function gameLoop() {
     update();
-    
     drawEverything();
 }
 
@@ -165,6 +212,11 @@ function keyDown(event) {
     else if (event.keyCode == 40){
         player.movingDown = true;
         player.playerImage.src = 'resources/player/redRight.png';
+    }
+    
+    if(event.keyCode == 32)
+    {
+        player.bullets.push(createBullet());
     }
 }
 
@@ -194,7 +246,6 @@ function startGame() {
         player.score = 0;
     }
 
-    
     player.positionX = 0;
     player.positionY = canvas.height / 2 - player.height / 2;
 
