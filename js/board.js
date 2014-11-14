@@ -10,6 +10,7 @@ function init(e) {
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
     setInterval(gameLoop, 1000 / 60);
+
 }
 
 var canvas = {
@@ -20,14 +21,14 @@ var canvas = {
     background : new Image(),
     starsLayer : new Image(),
     starsOneX : 0,
-    starsTwoX : this.width,
+    starsTwoX : 1024,
     updateStars : function()
     {
         this.starsOneX -= 2;
         this.starsTwoX -= 2;
-        if(this.starsOneX + this.width <= 0)
+        if(this.starsOneX <= -this.width)
             this.starsOneX = this.width;
-        else if(this.starsTwoX + this.width <= 0)
+        else if(this.starsTwoX  <= -this.width)
             this.starsTwoX = this.width;
     }
 }
@@ -35,6 +36,7 @@ var canvas = {
 window.onload = init;
 var enemyImages = [];
 var bulletImages = [];
+var bonusImaages = [];
 
 function loadResources()
 {
@@ -63,7 +65,8 @@ var Game = {
         {
             
         }
-    }
+    },
+    bonuses:[]
 }
 
 var player = {
@@ -171,6 +174,34 @@ function createBullet()
     }
     return tempBullet;
 }
+function createBonus()
+{
+    var bonus = {
+        bullets: [],
+        width: 60,
+        height: 40,
+        positionX: 0,
+        positionY: 0,
+        typeBonus: Math.round(Math.random()*1),
+        disappearTime: 10,
+        draw: function () {
+            canvas.canvasContext.drawImage(bonusImages[this.typeEnemy], this.positionX, this.positionY);
+        },
+        update: function(){
+            this.disappearTime-=0.5;
+
+        },
+        checkTime: function(){
+            if (this.disappearTime<=0) {
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+    };
+    return bonus;
+}
 
 function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -180,7 +211,9 @@ function drawEverything() {
     for (var i = 0; i < Game.enemies.length; i++) {
         Game.enemies[i].draw();     
     }
-    
+    for (var i = 0; i < Game.bonuses.length; i++) {
+        Game.bonuses[i].draw();
+    }
     player.draw();
 }
 
@@ -189,6 +222,12 @@ function update() {
     player.update();
     for(var i = 0; i < Game.enemies.length;i++)
         Game.enemies[i].update();
+    for (var i = 0; i < Game.bonuses.length; i++) {
+        Game.bonuses[i].update();
+        if (Game.bonuses[i].checkTime()) {
+            Game.bonuses[i].splice(i,1);
+        }
+    }
 }
 
 function gameLoop() {
