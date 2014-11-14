@@ -40,6 +40,8 @@ var Game = {
                   this.bullets[j].positionY + this.bullets[j].height >= this.enemies[i].positionY &&
                   this.bullets[j].positionY <= this.enemies[i].positionY + this.enemies[i].height)
                 {
+                    if(this.enemies[i].chanceForBonus >= 0 && this.enemies[i].chanceForBonus <= 10)
+                        this.bonuses.push(createBonus(this.enemies[i].positionX,this.enemies[i].positionY));
                     this.enemies.splice(i, 1);
                     this.bullets.splice(j, 1);
                     break;
@@ -49,6 +51,16 @@ var Game = {
                 {
                     this.bullets.splice(j, 1);
                 }
+            }
+        }
+        for(var i = 0; i < this.bonuses.length;i++)
+        {
+            if(this.bonuses[i].positionX + this.bonuses[i].width >= player.positionX &&
+                  this.bonuses[i].positionX <= player.positionX + player.width &&
+                  this.bonuses[i].positionY + this.bonuses[i].height >= player.positionY &&
+                  this.bonuses[i].positionY <= player.positionY + player.height)
+            {
+                this.bonuses.splice(i,1)
             }
         }
     }
@@ -125,12 +137,19 @@ function loadResources()
     var enemyBullet = new Image();
     var playerBullet = new Image();
     var doubleBullet = new Image();
+    var bulletsBonus = new Image();
+    var repairBonus = new Image();
+    
+    bulletsBonus.src = 'resources/bonuses/bullets.png';
+    repairBonus.src = 'resources/bonuses/repairBonus.png';
     enemyBullet.src = 'resources/bullet-enemies.png';
     playerBullet.src = 'resources/bullet-single.png';
     doubleBullet.src = 'resources/bullet-double.png';
     bulletImages.push(playerBullet);
     bulletImages.push(doubleBullet);
     bulletImages.push(enemyBullet);  
+    bonusImages.push(bulletsBonus);
+    bonusImages.push(repairBonus);
 }
 
 function startGame() {
@@ -163,7 +182,7 @@ function update() {
     for (var i = 0; i < Game.bonuses.length; i++) {
         Game.bonuses[i].update();
         if (Game.bonuses[i].checkTime()) {
-            Game.bonuses[i].splice(i,1);
+            Game.bonuses.splice(i,1);
         }
     }
     Game.handleCollisions();
@@ -189,13 +208,13 @@ function createEnemy()
 {
     var enemy = {
         hitPoint: Math.round(Math.random() * 10) + 5,
-        bullets: [],
         width: 60,
         height: 40,
         positionX: canvas.width + 80,
         positionY: Math.round(Math.random() * (canvas.height - 40)),
         speed: Math.random() + Game.level,      
         typeEnemy: Math.round(Math.random() * 3),
+        chanceForBonus : Math.round(Math.random() * 100),
         draw: function () {
             canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
         },
@@ -238,24 +257,24 @@ function createBullet(ownerTag, hitPointValue, speedToApply, bulletType)
     return tempBullet;
 }
 
-function createBonus()
+function createBonus(posX, posY)
 {
     var bonus = {
         width: 60,
         height: 40,
-        positionX: 0,
-        positionY: 0,
-        typeBonus: Math.round(Math.random()*2),
+        positionX: posX,
+        positionY: posY,
+        typeBonus: Math.round(Math.random()*1),
         disappearTime: 10,
-        draw: function () {
+        draw : function () {
             canvas.canvasContext.drawImage(bonusImages[this.typeBonus], this.positionX, this.positionY);
         },
         update: function(){
-            this.disappearTime-=0.5;
+            this.disappearTime-=0.05;
 
         },
         checkTime: function(){
-            if (this.disappearTime<=0) {
+            if (this.disappearTime <= 0) {
                 return true;
             }
             else{
