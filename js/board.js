@@ -220,7 +220,7 @@ function createEnemy()
         hitPoint: Math.round(Math.random() * 10) + 5,
         width: 60,
         height: 40,
-        positionX: canvas.width + 80,
+        positionX: canvas.width + Math.round(Math.random() * canvas.width * 2),
         positionY: Math.round(Math.random() * (canvas.height - 40)),
         speed: Math.random() + Game.level,      
         typeEnemy: Math.round(Math.random() * 3),
@@ -230,7 +230,12 @@ function createEnemy()
         },
         update: function () {
             this.positionX = this.positionX - this.speed;
-            this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2);   
+            this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2); 
+            this.outOfBoundsCheck()
+        },
+        outOfBoundsCheck: function () {
+            if (this.positionX < 0 - this.width)
+                this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
         }
     }
     return enemy;
