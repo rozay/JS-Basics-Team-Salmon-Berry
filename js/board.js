@@ -254,7 +254,7 @@ function keyDown(event) {
         player.playerImage.src = 'resources/player/redRight.png';
     }
     
-    if(event.keyCode == 32)
+    if(event.keyCode == 88)
     {
         player.bullets.push(createBullet());
     }
