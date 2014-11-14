@@ -2,6 +2,8 @@ window.onload = init;
 var enemyImages = [];
 var bulletImages = [];
 var bonusImages = [];
+var doubleGun = 0;
+var gunBonusHitted = false;
 
 var canvas = {
     canvasElement : document.getElementById('canvas'),
@@ -60,7 +62,11 @@ var Game = {
                   this.bonuses[i].positionY + this.bonuses[i].height >= player.positionY &&
                   this.bonuses[i].positionY <= player.positionY + player.height)
             {
-                this.bonuses.splice(i,1)
+                if(this.bonuses[i].typeBonus == 0){
+                    gunBonusHitted = true;
+                    doubleGun = 10;
+                }
+                this.bonuses.splice(i,1);
             }
         }
     }
@@ -185,6 +191,10 @@ function update() {
             Game.bonuses.splice(i,1);
         }
     }
+    doubleGun-=0.04;
+    if (doubleGun<=0) {
+        gunBonusHitted=false;
+    }
     Game.handleCollisions();
 }
 
@@ -271,7 +281,7 @@ function createBonus(posX, posY)
         },
         update: function(){
             this.disappearTime-=0.05;
-
+            this.doubleGun-=0.05;
         },
         checkTime: function(){
             if (this.disappearTime <= 0) {
@@ -284,7 +294,6 @@ function createBonus(posX, posY)
     };
     return bonus;
 }
-
 function keyDown(event) {
     if (event.keyCode == 39){
         player.movingRight = true;
@@ -305,7 +314,13 @@ function keyDown(event) {
     
     if(event.keyCode == 88)
     {
-        Game.bullets.push(createBullet('player',10,player.speed,0));
+        if(gunBonusHitted){
+            Game.bullets.push(createBullet('player',10,player.speed,1));
+        }
+        else{
+            Game.bullets.push(createBullet('player',10,player.speed,0));
+        }
+
     }
 }
 
