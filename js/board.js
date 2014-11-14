@@ -86,7 +86,7 @@ var player = {
     draw : function() {
         for(var i in this.bullets)
             this.bullets[i].draw();
-        canvas.canvasContext.drawImage(player.playerImage, this.positionX, this.positionY);
+        canvas.canvasContext.drawImage(player.playerImage, this.positionX, this.positionY);        
     },
     outOfBoundsCheck : function() {
         if(this.positionX < 0)
@@ -94,7 +94,7 @@ var player = {
         else if (this.positionX > canvas.width - this.width)
             this.positionX = canvas.width - this.width;
         if (this.positionY < 0 - this.height)
-            this.positionY = canvas.height - player.this;
+            this.positionY = canvas.height - this.height;
         else if (this.positionY > canvas.height)       
             this.positionY = 0;
     },
@@ -117,6 +117,7 @@ var player = {
             if(this.bullets[i].outOfBoundsCheck())
                 this.bullets.splice(i,1);
         }
+        this.outOfBoundsCheck()
     }
 }
 
@@ -130,7 +131,7 @@ function createEnemy()
         width: 60,
         height: 40,
         positionX: canvas.width + 80,
-        positionY: Math.round(Math.random() * canvas.height) - 40,
+        positionY: Math.round(Math.random() * (canvas.height - 40)),
         speed: Math.random() + Game.level,      
         typeEnemy: Math.round(Math.random() * 3),
         draw: function () {
