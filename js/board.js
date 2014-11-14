@@ -36,7 +36,7 @@ var canvas = {
 window.onload = init;
 var enemyImages = [];
 var bulletImages = [];
-var bonusImaages = [];
+var bonusImages = [];
 
 function loadResources()
 {
@@ -182,7 +182,7 @@ function createBonus()
         height: 40,
         positionX: 0,
         positionY: 0,
-        typeBonus: Math.round(Math.random()*1),
+        typeBonus: Math.round(Math.random()*2),
         disappearTime: 10,
         draw: function () {
             canvas.canvasContext.drawImage(bonusImages[this.typeEnemy], this.positionX, this.positionY);
