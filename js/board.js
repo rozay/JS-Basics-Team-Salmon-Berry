@@ -60,6 +60,14 @@ var Game = {
                     this.bullets.splice(j, 1);
                 }
             }
+            //Enemy collision
+            if(this.enemies[i].positionX + this.enemies[i].width >= player.positionX &&
+              this.enemies[i].positionX <= player.positionX + player.width &&
+              this.enemies[i].positionY + this.enemies[i].height >= player.positionY &&
+              this.enemies[i].positionY <= player.positionY + player.height)
+            {
+                player.lives -= 1;
+            }
         }
         for(var i = 0; i < this.bonuses.length;i++)
         {
@@ -380,23 +388,7 @@ function keyUp(e) {
 }
 
 
-
-
-
-// *************************************************
-// *************************************************
-// *************************************************
-function shipCollision() {
-
-    for (var i = 0; i < Game.enemies.length; i++) {
-        if (player.positionX + player.width > Game.enemies[i].positionX && player.positionX < Game.enemies[i].positionX + Game.enemies[i].width) {
-            checkLives();
-        }
-    }
-}
-
 function checkLives() {
-    player.lives -= 1;
     if (player.lives > 0) {
         reset();
     }
