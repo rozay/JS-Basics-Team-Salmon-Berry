@@ -2,9 +2,8 @@ window.onload = init;
 var enemyImages = [];
 var bulletImages = [];
 var bonusImages = [];
-var doubleGun = 0;
-var gunBonusHitted = false;
 var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
+var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
 bgMusic.play();
 bgMusic.volume = 0.2;
 bgMusic.loop = true;
@@ -44,18 +43,27 @@ var Game = {
         {
             for(var j = 0; j < this.bullets.length;j++)
             {
-                if(this.bullets[j].positionX + this.bullets[j].width >= this.enemies[i].positionX &&
+                if(this.bullets[j].owner === 'player' && this.bullets[j].positionX + this.bullets[j].width >= this.enemies[i].positionX &&
                   this.bullets[j].positionX <= this.enemies[i].positionX + this.enemies[i].width &&
                   this.bullets[j].positionY + this.bullets[j].height >= this.enemies[i].positionY &&
                   this.bullets[j].positionY <= this.enemies[i].positionY + this.enemies[i].height)
                 {
                     if(this.enemies[i].chanceForBonus >= 0 && this.enemies[i].chanceForBonus <= 10)
-                        this.bonuses.push(createBonus(this.enemies[i].positionX,this.enemies[i].positionY));
+                        this.bonuses.push(new Bonus(this.enemies[i].positionX,this.enemies[i].positionY));
                     this.enemies.splice(i, 1);
                     this.bullets.splice(j, 1);
                     player.score += Game.level * 10;
                     break;
                 }
+                else if(this.bullets[j].owner === 'enemy' && this.bullets[j].positionX + this.bullets[j].width >= player.positionX &&
+                  this.bullets[j].positionX <= player.positionX + player.width &&
+                  this.bullets[j].positionY + this.bullets[j].height >= player.positionY &&
+                  this.bullets[j].positionY <= player.positionY + player.height)
+                {
+                    player.health -= this.bullets[j].hitPoint;
+                    this.bullets.splice(j, 1);
+                }
+                
                 if(this.bullets[j].positionX > canvas.width
                   || this.bullets[j].positionX < 0)
                 {
@@ -74,6 +82,15 @@ var Game = {
                 player.lives -= 1;
                 checkLives();
             }
+            else
+            {
+                if(Math.round(Math.random() * 100) === 99)
+                {
+                    Game.bullets.push(new Bullet('enemy', this.enemies[i].hitPoint, -3,
+                            2, this.enemies[i].positionX, 
+                            this.enemies[i].positionY + this.enemies[i].height / 4));
+                }
+            }
         }
         
         for(var i = 0; i < this.bonuses.length;i++)
@@ -84,8 +101,8 @@ var Game = {
                   this.bonuses[i].positionY <= player.positionY + player.height)
             {
                 if(this.bonuses[i].typeBonus == 0){
-                    gunBonusHitted = true;
-                    doubleGun = 10;
+                    player.doubleGuns = true;
+                    player.doubleGunsTime = 10;
                 }
                 this.bonuses.splice(i,1);
             }
@@ -106,7 +123,8 @@ var player = {
     speed : 3,
     health: 100,
     lives: 3,
-    doubleGuns : true,
+    doubleGuns : false,
+    doubleGunsTime : 10,
     score: 0,
     draw : function() {
         for(var i in this.bullets)
@@ -136,11 +154,18 @@ var player = {
         else if(this.movingDown === true) {
             this.positionY += this.speed;
         }     
-        
+        if(this.doubleGuns === true)
+        {
+            this.doubleGunsTime -= 0.05;
+            if(this.doubleGunsTime <= 0)
+            {
+                this.doubleGuns = false;
+                this.doubleGunsTime = 0;
+            }
+        }
         this.outOfBoundsCheck()
     }
 }
-
 
 function init(e) {
     loadResources();
@@ -195,7 +220,7 @@ function startGame() {
     player.positionY = canvas.height / 2 - player.height / 2;
 
     for (var i = 0; i < Game.enemiesPerLevel; i++) {
-        Game.enemies.push(createEnemy());
+        Game.enemies.push(new Enemy());
     }
 }
 
@@ -223,10 +248,6 @@ function update() {
                 Game.bonuses.splice(i, 1);
             }
         }
-        doubleGun -= 0.04;
-        if (doubleGun <= 0) {
-            gunBonusHitted = false;
-        }
         Game.handleCollisions();
     }
 }
@@ -252,34 +273,34 @@ function drawEverything() {
     }
 }
 
-function createEnemy()
+function Enemy()
 {
-    var enemy = {
-        hitPoint: Math.round(Math.random() * 10) + 5,
-        width: 60,
-        height: 40,
-        positionX: canvas.width + Math.round(Math.random() * canvas.width * 2),
-        positionY: Math.round(Math.random() * (canvas.height - 40)),
-        speed: Math.random() + Game.level,      
-        typeEnemy: Math.round(Math.random() * 3),
-        chanceForBonus : Math.round(Math.random() * 100),
-        draw: function () {
-            canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
-        },
-        update: function () {
-            this.positionX = this.positionX - this.speed;
-            this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2);         
-            this.outOfBoundsCheck()
-        },
-        outOfBoundsCheck: function () {
-            if (this.positionX < 0 - this.width)
-                this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
-        }
-    }
-    return enemy;
+    this.hitPoint = Math.round(Math.random() * 10) + 5;
+    this.width = 60;
+    this.height = 40;
+    this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
+    this.positionY = Math.round(Math.random() * (canvas.height - 40));
+    this.speed = Math.random() + Game.level;
+    this.typeEnemy = Math.round(Math.random() * 3);
+    this.chanceForBonus = Math.round(Math.random() * 100);
+    this.draw = function () 
+    {
+        canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
+    };
+    this.update = function () 
+    {
+        this.positionX = this.positionX - this.speed;
+        this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2); 
+        this.outOfBoundsCheck()
+    };
+    this.outOfBoundsCheck = function () 
+    {
+        if (this.positionX < 0 - this.width)
+            this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
+    };
 }
 
-function createBullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY)
+function Bullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY)
 {
     this.hitPoint = hitPointValue;
     this.positionX = posX;
@@ -306,36 +327,33 @@ function createBullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, p
     };
 }
 
-function createBonus(posX, posY)
+function Bonus(posX, posY)
 {
-    var bonus = {
-        width: 60,
-        height: 40,
-        positionX: posX,
-        positionY: posY,
-        typeBonus: Math.round(Math.random()*1),
-        disappearTime: 10,
-        draw : function () {
-            canvas.canvasContext.drawImage(bonusImages[this.typeBonus], this.positionX, this.positionY);
-        },
-        update: function(){
-            this.disappearTime-=0.05;
-            this.doubleGun-=0.05;
-        },
-        checkTime: function(){
-            if (this.disappearTime <= 0) {
-                return true;
-            }
-            else{
-                return false;
-            }
-        }
-
+    this.width  = 60;
+    this.height = 40;
+    this.positionX = posX;
+    this.positionY = posY;
+    this.typeBonus = Math.round(Math.random()*1);
+    this.disappearTime = 10;
+    this.draw = function () 
+    {
+        canvas.canvasContext.drawImage(bonusImages[this.typeBonus], this.positionX, this.positionY);
     };
-
-    return bonus;
-
+    this.update = function()
+    {
+        this.disappearTime-=0.05;
+    };
+    this.checkTime = function()
+    {
+        if (this.disappearTime <= 0) {
+            return true;
+        }
+        else{
+            return false;
+        }
+    };
 }
+
 function keyDown(event) {
     if (event.keyCode == 39){
         player.movingRight = true;
@@ -354,19 +372,17 @@ function keyDown(event) {
         player.playerImage.src = 'resources/player/redRight.png';
     }
    
-
     if(event.keyCode == 88)
     {
-        var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
         bulletSound.play();
         if(player.doubleGuns === true){
-            Game.bullets.push(new createBullet('player', 10, player.speed, 
+            Game.bullets.push(new Bullet('player', 10, player.speed, 
                         0, player.positionX + player.width, player.positionY));
-            Game.bullets.push(new createBullet('player', 10, player.speed,
+            Game.bullets.push(new Bullet('player', 10, player.speed,
                         0, player.positionX + player.width, player.positionY + player.height - 10));
         }
         else{
-            Game.bullets.push(new createBullet('player', 10, player.speed,
+            Game.bullets.push(new Bullet('player', 10, player.speed,
                         0, player.positionX + player.width, 
                         player.positionY + player.health / 4));
         }
@@ -414,6 +430,11 @@ function drawGUI() {
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 30);
     canvas.canvasContext.fillText('Score:   ' + player.score, 10, 50);
+    canvas.canvasContext.strokeStyle = '#fff';
+    canvas.canvasContext.lineWidth = 3;
+    canvas.canvasContext.strokeRect(5,canvas.height - 45, 106, 36);
+    canvas.canvasContext.fillStyle = '#0f0';
+    canvas.canvasContext.fillRect(8,canvas.height - 42, player.health, 30);
 }
 
 function gameOver() {
