@@ -8,7 +8,6 @@ bgMusic.play();
 bgMusic.volume = 0.2;
 bgMusic.loop = true;
 
-
 var canvas = {
     canvasElement : document.getElementById('canvas'),
     canvasContext : undefined,
@@ -28,7 +27,6 @@ var canvas = {
             this.starsTwoX = this.width;
     }
 }
-
 
 var Game = {
     level : 1,
@@ -59,9 +57,13 @@ var Game = {
                   this.bullets[j].positionX <= player.positionX + player.width &&
                   this.bullets[j].positionY + this.bullets[j].height >= player.positionY &&
                   this.bullets[j].positionY <= player.positionY + player.height)
-                {
-                    player.health -= this.bullets[j].hitPoint;
+                {                    
                     this.bullets.splice(j, 1);
+                    player.health -= this.bullets[j].hitPoint;
+                    if (player.health <= 0) {
+                        player.lives--;
+                        checkLives();
+                    }
                 }
                 
                 if(this.bullets[j].positionX > canvas.width
@@ -412,7 +414,6 @@ function keyUp(e) {
     }
 }
 
-
 function checkLives() {
     if (player.lives > 0) {
         reset();
@@ -423,6 +424,7 @@ function reset() {
     player.positionX = 0;
     player.positionY = canvas.height / 2 - player.height / 2;
     Game.bullets = [];
+    player.health = 100;
 }
 
 function drawGUI() {
