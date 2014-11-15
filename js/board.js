@@ -33,7 +33,8 @@ var canvas = {
 
 var Game = {
     level : 1,
-    enemiesPerLevel : 20,
+    enemiesPerLevel: 20,
+    gameOver: false,
     enemies : [],
     bullets : [],
     bonuses : [],
@@ -52,6 +53,7 @@ var Game = {
                         this.bonuses.push(createBonus(this.enemies[i].positionX,this.enemies[i].positionY));
                     this.enemies.splice(i, 1);
                     this.bullets.splice(j, 1);
+                    player.score += Game.level * 10;
                     break;
                 }
                 if(this.bullets[j].positionX > canvas.width
@@ -67,6 +69,7 @@ var Game = {
               this.enemies[i].positionY <= player.positionY + player.height)
             {
                 player.lives -= 1;
+                checkLives();
             }
         }
         for(var i = 0; i < this.bonuses.length;i++)
@@ -99,6 +102,7 @@ var player = {
     speed : 3,
     health: 100,
     lives: 3,
+    score: 0,
     draw : function() {
         for(var i in this.bullets)
             this.bullets[i].draw();
@@ -155,16 +159,14 @@ function loadResources()
         var tempImage = new Image();
         tempImage.src = 'resources/enemies/enemy' + i.toString() + '.png';
         enemyImages.push(tempImage);
-
     }
+
     var enemyBullet = new Image();
     var playerBullet = new Image();
     var doubleBullet = new Image();
     var bulletsBonus = new Image();
     var repairBonus = new Image();
     
-
-
     bulletsBonus.src = 'resources/bonuses/bullets.png';
     repairBonus.src = 'resources/bonuses/repairBonus.png';
     enemyBullet.src = 'resources/bullet-enemies.png';
@@ -175,7 +177,6 @@ function loadResources()
     bulletImages.push(enemyBullet);  
     bonusImages.push(bulletsBonus);
     bonusImages.push(repairBonus);
-
 }
 
 function startGame() {
@@ -194,50 +195,56 @@ function startGame() {
 }
 
 function gameLoop() {
-    if (player.lives > 0) {
-        update();
-        drawEverything();
-    } else {
-        canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    update();
+    drawEverything();
+
+    if (player.lives == 0) {
+        Game.gameOver = true;
+    } 
 }
 
 function update() {
     canvas.updateStars();
-    player.update();
-    for(var i = 0; i< Game.bullets.length;i++)
-        Game.bullets[i].update();
-    for(var i = 0; i < Game.enemies.length;i++)
-        Game.enemies[i].update();
-    for (var i = 0; i < Game.bonuses.length; i++) {
-        Game.bonuses[i].update();
-        if (Game.bonuses[i].checkTime()) {
-            Game.bonuses.splice(i,1);
+
+    if (!Game.gameOver) {
+        player.update();
+        for (var i = 0; i < Game.bullets.length; i++)
+            Game.bullets[i].update();
+        for (var i = 0; i < Game.enemies.length; i++)
+            Game.enemies[i].update();
+        for (var i = 0; i < Game.bonuses.length; i++) {
+            Game.bonuses[i].update();
+            if (Game.bonuses[i].checkTime()) {
+                Game.bonuses.splice(i, 1);
+            }
         }
+        doubleGun -= 0.04;
+        if (doubleGun <= 0) {
+            gunBonusHitted = false;
+        }
+        Game.handleCollisions();
     }
-    doubleGun-=0.04;
-    if (doubleGun<=0) {
-        gunBonusHitted=false;
-    }
-    Game.handleCollisions();
-    shipCollision();
 }
 
 function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
     canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsOneX,0);
-    canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsTwoX,0);
-    scoreTotal();
-    for (var i = 0; i < Game.enemies.length; i++) {
-        Game.enemies[i].draw();     
+    canvas.canvasContext.drawImage(canvas.starsLayer, canvas.starsTwoX, 0);
+    if (!Game.gameOver) {
+        scoreTotal();
+        for (var i = 0; i < Game.enemies.length; i++) {
+            Game.enemies[i].draw();
+        }
+        for (var i = 0; i < Game.bonuses.length; i++) {
+            Game.bonuses[i].draw();
+        }
+        for (var i = 0; i < Game.bullets.length; i++)
+            Game.bullets[i].draw();
+        player.draw();
+    } else {
+        gameOver();
     }
-    for (var i = 0; i < Game.bonuses.length; i++) {
-        Game.bonuses[i].draw();
-    }
-    for(var i = 0; i< Game.bullets.length;i++)
-        Game.bullets[i].draw();
-    player.draw();
 }
 
 function createEnemy()
@@ -333,7 +340,6 @@ function keyDown(event) {
     if (event.keyCode == 39){
         player.movingRight = true;
         player.playerImage.src = 'resources/player/redForward.png';
-        bulletSound.play();
     }
     else if (event.keyCode == 37){
         player.movingLeft = true;
@@ -359,8 +365,6 @@ function keyDown(event) {
         else{
             Game.bullets.push(createBullet('player',10,player.speed,0));
         }
-
-
     }
 }
 
@@ -396,12 +400,26 @@ function checkLives() {
 
 function reset() {
     player.positionX = 0;
-    player.positionY = canvas.height - player.height / 2;
+    player.positionY = canvas.height / 2 - player.height / 2;
+    Game.bullets = [];
+
+    for (var i = 0; i < Game.enemies.length; i++) {
+        Game.enemies[i].positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
+        Game.enemies[i].positionY = Math.round(Math.random() * (canvas.height - 40));
+    }   
 }
 
 function scoreTotal() {
-    canvas.canvasContext.font = 'bold 20px Georgia';
+    canvas.canvasContext.font = 'bold 20px Arial';
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('Lives:', 10, 30);
-    canvas.canvasContext.fillText(player.lives, 68, 30);
+    canvas.canvasContext.fillText(player.lives, 78, 30);
+    canvas.canvasContext.fillText('Score:', 10, 50);
+    canvas.canvasContext.fillText(player.score, 78, 50);
+}
+
+function gameOver() {
+    canvas.canvasContext.font = 'bold 20px Arial';
+    canvas.canvasContext.fillStyle = '#fff';
+    canvas.canvasContext.fillText('GAME OVER!', canvas.width / 2 - 90, canvas.height / 2);
 }
