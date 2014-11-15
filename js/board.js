@@ -186,8 +186,12 @@ function startGame() {
 }
 
 function gameLoop() {
-    update();
-    drawEverything();
+    if (player.lives > 0) {
+        update();
+        drawEverything();
+    } else {
+        canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 function update() {
@@ -208,6 +212,7 @@ function update() {
         gunBonusHitted=false;
     }
     Game.handleCollisions();
+    shipCollision();
 }
 
 function drawEverything() {
@@ -371,4 +376,39 @@ function keyUp(e) {
         player.playerImage.src = 'resources/player/main.png';
 
     }
+}
+
+
+
+
+
+// *************************************************
+// *************************************************
+// *************************************************
+function shipCollision() {
+
+    for (var i = 0; i < Game.enemies.length; i++) {
+        if (player.positionX + player.width > Game.enemies[i].positionX && player.positionX < Game.enemies[i].positionX + Game.enemies[i].width) {
+            checkLives();
+        }
+    }
+}
+
+function checkLives() {
+    player.lives -= 1;
+    if (player.lives > 0) {
+        reset();
+    }
+}
+
+function reset() {
+    player.positionX = 0;
+    player.positionY = canvas.height - player.height / 2;
+}
+
+function scoreTotal() {
+    canvas.canvasContext.font = 'bold 20px Georgia';
+    canvas.canvasContext.fillStyle = '#000';
+    canvas.canvasContext.fillText('Lives:', 10, 30);
+    canvas.canvasContext.fillText(player.lives, 68, 30);
 }
