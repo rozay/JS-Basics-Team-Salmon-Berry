@@ -4,6 +4,11 @@ var bulletImages = [];
 var bonusImages = [];
 var doubleGun = 0;
 var gunBonusHitted = false;
+var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
+bgMusic.play();
+bgMusic.volume = 0.2;
+bgMusic.loop = true;
+
 
 var canvas = {
     canvasElement : document.getElementById('canvas'),
@@ -24,6 +29,7 @@ var canvas = {
             this.starsTwoX = this.width;
     }
 }
+
 
 var Game = {
     level : 1,
@@ -118,6 +124,7 @@ var player = {
     }
 }
 
+
 function init(e) {
     loadResources();
     startGame();
@@ -133,12 +140,14 @@ function init(e) {
 }
 
 function loadResources()
+
 {
     for(var i = 1; i <= 4;i++)
     {
         var tempImage = new Image();
         tempImage.src = 'resources/enemies/enemy' + i.toString() + '.png';
         enemyImages.push(tempImage);
+
     }
     var enemyBullet = new Image();
     var playerBullet = new Image();
@@ -146,6 +155,8 @@ function loadResources()
     var bulletsBonus = new Image();
     var repairBonus = new Image();
     
+
+
     bulletsBonus.src = 'resources/bonuses/bullets.png';
     repairBonus.src = 'resources/bonuses/repairBonus.png';
     enemyBullet.src = 'resources/bullet-enemies.png';
@@ -156,6 +167,7 @@ function loadResources()
     bulletImages.push(enemyBullet);  
     bonusImages.push(bulletsBonus);
     bonusImages.push(repairBonus);
+
 }
 
 function startGame() {
@@ -267,9 +279,10 @@ function createBullet(ownerTag, hitPointValue, speedToApply, bulletType)
         {
             canvas.canvasContext.drawImage(bulletImages[this.typeBullet], this.positionX, this.positionY);
         }
-        
+
     }
     return tempBullet;
+
 }
 
 function createBonus(posX, posY)
@@ -296,13 +309,17 @@ function createBonus(posX, posY)
                 return false;
             }
         }
+
     };
+
     return bonus;
+
 }
 function keyDown(event) {
     if (event.keyCode == 39){
         player.movingRight = true;
         player.playerImage.src = 'resources/player/redForward.png';
+        bulletSound.play();
     }
     else if (event.keyCode == 37){
         player.movingLeft = true;
@@ -316,15 +333,19 @@ function keyDown(event) {
         player.movingDown = true;
         player.playerImage.src = 'resources/player/redRight.png';
     }
-    
+   
+
     if(event.keyCode == 88)
     {
+        var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
+        bulletSound.play();
         if(gunBonusHitted){
             Game.bullets.push(createBullet('player',10,player.speed,1));
         }
         else{
             Game.bullets.push(createBullet('player',10,player.speed,0));
         }
+
 
     }
 }
@@ -333,17 +354,21 @@ function keyUp(e) {
     if (event.keyCode == 39){
         player.movingRight = false;
         player.playerImage.src = 'resources/player/main.png';
+
     }
     else if (event.keyCode == 37){
         player.movingLeft = false;
         player.playerImage.src = 'resources/player/main.png';
+
     }
     if (event.keyCode == 38){
         player.movingUp = false;
         player.playerImage.src = 'resources/player/main.png';
+
     }
     else if (event.keyCode == 40){
         player.movingDown = false;
         player.playerImage.src = 'resources/player/main.png';
+
     }
 }
