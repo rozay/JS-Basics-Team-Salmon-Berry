@@ -220,6 +220,7 @@ function drawEverything() {
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
     canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsOneX,0);
     canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsTwoX,0);
+    scoreTotal();
     for (var i = 0; i < Game.enemies.length; i++) {
         Game.enemies[i].draw();     
     }
@@ -408,7 +409,7 @@ function reset() {
 
 function scoreTotal() {
     canvas.canvasContext.font = 'bold 20px Georgia';
-    canvas.canvasContext.fillStyle = '#000';
+    canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('Lives:', 10, 30);
     canvas.canvasContext.fillText(player.lives, 68, 30);
 }
