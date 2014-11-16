@@ -107,6 +107,9 @@ var Game = {
                     player.doubleGuns = true;
                     player.doubleGunsTime = 10;
                 }
+                if (this.bonuses[i].typeBonus == 1) {
+                    player.health=100;
+                }
                 this.bonuses.splice(i,1);
             }
         }
@@ -159,7 +162,7 @@ var player = {
         }     
         if(this.doubleGuns === true)
         {
-            this.doubleGunsTime -= 0.05;
+            this.doubleGunsTime -= 0.03;
             if(this.doubleGunsTime <= 0)
             {
                 this.doubleGuns = false;
@@ -190,7 +193,7 @@ function loadResources()
     for(var i = 1; i <= 4;i++)
     {
         var tempImage = new Image();
-        tempImage.src = 'resources/enemies/enemy' + i.toString() + '.png';
+        tempImage.src = 'resources/enemy.png';
         enemyImages.push(tempImage);
     }
 
@@ -203,7 +206,7 @@ function loadResources()
     bulletsBonus.src = 'resources/bonuses/bullets.png';
     repairBonus.src = 'resources/bonuses/repairBonus.png';
     enemyBullet.src = 'resources/bullet-enemies.png';
-    playerBullet.src = 'resources/bullet-single.png';
+    playerBullet.src = 'resources/bullet.png';
     doubleBullet.src = 'resources/bullet-double.png';
     bulletImages.push(playerBullet);
     bulletImages.push(doubleBullet);
@@ -279,13 +282,13 @@ function drawEverything() {
 function Enemy()
 {
     this.hitPoint = Math.round(Math.random() * 10) + 5;
-    this.width = 60;
-    this.height = 40;
+    this.width = 50;
+    this.height = 50;
     this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
     this.positionY = Math.round(Math.random() * (canvas.height - 40));
     this.speed = Math.random() + Game.level;
     this.typeEnemy = Math.round(Math.random() * 3);
-    this.chanceForBonus = Math.round(Math.random() * 100);
+    this.chanceForBonus = Math.round(Math.random() * 80);
     this.draw = function () 
     {
         canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
@@ -344,7 +347,7 @@ function Bonus(posX, posY)
     };
     this.update = function()
     {
-        this.disappearTime-=0.05;
+        this.disappearTime-=0.01;
     };
     this.checkTime = function()
     {
@@ -360,19 +363,19 @@ function Bonus(posX, posY)
 function keyDown(event) {
     if (event.keyCode == 39){
         player.movingRight = true;
-        player.playerImage.src = 'resources/player/redForward.png';
+        player.playerImage.src = 'resources/player/forward.png';
     }
     else if (event.keyCode == 37){
         player.movingLeft = true;
-        player.playerImage.src = 'resources/player/redBackwards.png';
+        player.playerImage.src = 'resources/player/back.png';
     }
     if (event.keyCode == 38){
         player.movingUp = true;
-        player.playerImage.src = 'resources/player/redLeft.png';
+        player.playerImage.src = 'resources/player/left.png';
     }
     else if (event.keyCode == 40){
         player.movingDown = true;
-        player.playerImage.src = 'resources/player/redRight.png';
+        player.playerImage.src = 'resources/player/right.png';
     }
    
     if(event.keyCode == 88)
