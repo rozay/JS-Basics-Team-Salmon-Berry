@@ -120,9 +120,9 @@ var Menu =
                  'width' : 167, 'height' : 105},
     draw : function()
     {
-        canvas.canvasContext.drawImage(menuScreenImages['play'], this.playButton.positionX,this.playButton.positionY);
-        canvas.canvasContext.drawImage(menuScreenImages['credits'], this.creaditsButton.positionX,this.creaditsButton.positionY);
-        canvas.canvasContext.drawImage(menuScreenImages['exit'], this.exitButton.positionX,this.exitButton.positionY);
+        canvas.canvasContext.drawImage(menuScreenImages['play'], this.playButton.positionX,this.playButton.positionY,this.playButton.width,this.playButton.height);
+        canvas.canvasContext.drawImage(menuScreenImages['credits'], this.creaditsButton.positionX,this.creaditsButton.positionY, this.creaditsButton.width, this.creaditsButton.height);
+        canvas.canvasContext.drawImage(menuScreenImages['exit'], this.exitButton.positionX,this.exitButton.positionY, this.exitButton.width,this.exitButton.height);
     }
 }
 
@@ -195,17 +195,17 @@ function init(e) {
     
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
-    canvas.canvasElement.addEventListener("mousemove", mouseMove);
+    document.addEventListener("mousemove", mouseOver);
     setInterval(gameLoop, 1000 / 60);
 }
 
-function mouseMove(event)
+function mouseOver(event)
 {
-    var temp = {'positionX' : event.pageX, 'positionY' : event.clientY, 'width' : 1, 'height' : 1};
+    var temp = {'positionX' : event.clientX - canvas.canvasElement.offsetLeft, 'positionY' : event.clientY + + canvas.canvasElement.offsetTop, 'width' : 1, 'height' : 1};
     if(areColliding(temp, Menu.playButton))
     {
-        menuScreenImages['play'].width = 500;
-        console.log('11');
+        Menu.playButton.width = 250;
+        console.log('1');
     }
 }
 
