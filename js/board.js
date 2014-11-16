@@ -112,17 +112,15 @@ var Game = {
 
 var Menu = 
 {
-    playButton : {'positionX' : canvas.width / 2 - 83, 'positionY' : 105,
-                 'width' : 167, 'height' : 105},
-    creaditsButton : {'positionX' : canvas.width / 2 - 83, 'positionY' : 210,
-                 'width' : 167, 'height' : 105},
-    exitButton : {'positionX' : canvas.width / 2 - 83, 'positionY' : 315,
-                 'width' : 167, 'height' : 105},
+    buttons : [new Button('play',50), new Button('credits', 227), new Button('exit',394)],
     draw : function()
     {
-        canvas.canvasContext.drawImage(menuScreenImages['play'], this.playButton.positionX,this.playButton.positionY,this.playButton.width,this.playButton.height);
-        canvas.canvasContext.drawImage(menuScreenImages['credits'], this.creaditsButton.positionX,this.creaditsButton.positionY, this.creaditsButton.width, this.creaditsButton.height);
-        canvas.canvasContext.drawImage(menuScreenImages['exit'], this.exitButton.positionX,this.exitButton.positionY, this.exitButton.width,this.exitButton.height);
+        for(var i in this.buttons)
+        {
+            canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name],
+                                          this.buttons[i].positionX, this.buttons[i].positionY,
+                                          this.buttons[i].width, this.buttons[i].height);
+        }
     }
 }
 
@@ -196,16 +194,24 @@ function init(e) {
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
     document.addEventListener("mousemove", mouseOver);
+    //document.addEventListener("mousemove", mouseOver);
     setInterval(gameLoop, 1000 / 60);
 }
 
 function mouseOver(event)
 {
     var temp = {'positionX' : event.clientX - canvas.canvasElement.offsetLeft, 'positionY' : event.clientY + + canvas.canvasElement.offsetTop, 'width' : 1, 'height' : 1};
-    if(areColliding(temp, Menu.playButton))
+    for(var i in Menu.buttons)
     {
-        Menu.playButton.width = 250;
-        console.log('1');
+        if(areColliding(temp, Menu.buttons[i]))
+        {
+            Menu.buttons[i].width = 250;
+            console.log('1');
+        }
+        else
+        {
+            Menu.buttons[i].width = 167;
+        }
     }
 }
 
@@ -513,10 +519,19 @@ function createImage(path)
 function areColliding(objectOne, objectTwo)
 {
     if(objectOne.positionX + objectOne.width >= objectTwo.positionX &&
-    objectOne.positionX <= objectTwo.positionX + objectTwo.width &
+    objectOne.positionX <= objectTwo.positionX + objectTwo.width &&
     objectOne.positionY + objectOne.height >= objectTwo.positionY &&
     objectOne.positionY <= objectTwo.positionY + objectTwo.height)
         return true;
     else
         return false;
+}
+
+function Button(tag, posY)
+{
+    this.name = tag;
+    this.width = 167;
+    this.height = 105;
+    this.positionX = canvas.width / 2 - 83;
+    this.positionY = posY;
 }
