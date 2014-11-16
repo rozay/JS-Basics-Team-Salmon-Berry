@@ -5,6 +5,7 @@ var bonusImages = [];
 var explosionEffect = [];
 var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
 var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
+var menuScreenImages = [];
 bgMusic.play();
 bgMusic.volume = 0.2;
 bgMusic.loop = true;
@@ -32,7 +33,7 @@ var canvas = {
 var Game = {
     level : 1,
     enemiesPerLevel: 20,
-    gameOver: false,
+    gameOver: true,
     enemies : [],
     bullets : [],
     bonuses : [],
@@ -86,6 +87,7 @@ var Game = {
               this.enemies[i].positionY <= player.positionY + player.height)
             {
                 player.lives -= 1;
+                 this.explosions.push(new Explosion(this.enemies[i].positionX - 200,this.enemies[i].positionY - 200));
                 this.enemies.splice(i,1);
                 checkLives();
             }
@@ -94,7 +96,7 @@ var Game = {
                 if(Math.round(Math.random() * 100) === 99)
                 {
                     Game.bullets.push(new Bullet('enemy', this.enemies[i].hitPoint, -3,
-                            2, this.enemies[i].positionX, 
+                            1, this.enemies[i].positionX, 
                             this.enemies[i].positionY + this.enemies[i].height / 4));
                 }
             }
@@ -116,6 +118,19 @@ var Game = {
                 }
                 this.bonuses.splice(i,1);
             }
+        }
+    }
+}
+
+var Menu = 
+{
+    draw : function()
+    {
+        var j = 0;
+        for(var i in menuScreenImages)
+        {
+            canvas.canvasContext.drawImage(menuScreenImages[i], canvas.width / 2 - 128, j * 172);
+            j++;
         }
     }
 }
@@ -196,34 +211,22 @@ function loadResources()
 {
     for(var i = 1; i <= 4;i++)
     {
-        var tempImage = new Image();
-        tempImage.src = 'resources/enemy.png';
-        enemyImages.push(tempImage);
+        enemyImages.push(createImage('resources/enemy.png'));
     }
     
     for(var i = 1; i <= 10; i++)
     {
-        var tempImage = new Image();
-        tempImage.src = 'resources/Effects/Explosion/Explosion_' + i + '.png';
-        explosionEffect.push(tempImage);
+        explosionEffect.push(createImage('resources/Effects/Explosion/Explosion_' + i + '.png'));
     }
     
-    var enemyBullet = new Image();
-    var playerBullet = new Image();
-    var doubleBullet = new Image();
-    var bulletsBonus = new Image();
-    var repairBonus = new Image();
+    menuScreenImages['play'] = createImage('resources/Menu/Play.png');
+    menuScreenImages['credits'] = createImage('resources/Menu/Credits.png');
+    menuScreenImages['exit'] = createImage('resources/Menu/Exit.png');
     
-    bulletsBonus.src = 'resources/bonuses/bullets.png';
-    repairBonus.src = 'resources/bonuses/repairBonus.png';
-    enemyBullet.src = 'resources/bullet-enemies.png';
-    playerBullet.src = 'resources/bullet.png';
-    doubleBullet.src = 'resources/bullet-double.png';
-    bulletImages.push(playerBullet);
-    bulletImages.push(doubleBullet);
-    bulletImages.push(enemyBullet);  
-    bonusImages.push(bulletsBonus);
-    bonusImages.push(repairBonus);
+    bulletImages.push(createImage('resources/bullet.png'));
+    bulletImages.push(createImage('resources/bullet-enemies.png'));  
+    bonusImages.push(createImage('resources/bonuses/bullets.png'));
+    bonusImages.push('resources/bonuses/repairBonus.png');
 }
 
 function startGame() {
@@ -296,7 +299,7 @@ function drawEverything() {
         player.draw();
         
     } else {
-        gameOver();
+        Menu.draw();
     }
 }
 
@@ -495,4 +498,11 @@ function gameOver() {
     canvas.canvasContext.font = 'bold 20px Arial';
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('GAME OVER!', canvas.width / 2 - 90, canvas.height / 2);
+}
+
+function createImage(path)
+{
+    var tempImage = new Image();
+    tempImage.src = path;
+    return tempImage;
 }
