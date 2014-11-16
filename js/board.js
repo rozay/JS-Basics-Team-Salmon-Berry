@@ -66,11 +66,12 @@ var Game = {
                     }
                 }
                 
-                if(this.bullets[j].positionX > canvas.width
-                  || this.bullets[j].positionX < 0)
-                {
-                    this.bullets.splice(j, 1);
-                }
+                if (this.bullets.length != 0) {
+                    if (this.bullets[j].positionX > canvas.width
+                  || this.bullets[j].positionX < 0) {
+                        this.bullets.splice(j, 1);
+                    }
+                }               
             }           
         }
         //Enemy collision
@@ -391,7 +392,7 @@ function keyDown(event) {
     }
 }
 
-function keyUp(e) {
+function keyUp(event) {
     if (event.keyCode == 39){
         player.movingRight = false;
         player.playerImage.src = 'resources/player/main.png';
@@ -410,7 +411,6 @@ function keyUp(e) {
     else if (event.keyCode == 40){
         player.movingDown = false;
         player.playerImage.src = 'resources/player/main.png';
-
     }
 }
 
