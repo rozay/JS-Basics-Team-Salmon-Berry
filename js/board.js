@@ -117,7 +117,7 @@ var Menu =
     {
         for(var i in this.buttons)
         {
-            canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name],
+            canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                           this.buttons[i].positionX, this.buttons[i].positionY,
                                           this.buttons[i].width, this.buttons[i].height);
         }
@@ -194,23 +194,39 @@ function init(e) {
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
     document.addEventListener("mousemove", mouseOver);
-    //document.addEventListener("mousemove", mouseOver);
+    document.addEventListener("click", mouseClick);
     setInterval(gameLoop, 1000 / 60);
 }
 
-function mouseOver(event)
+function mouseClick(event)
 {
-    var temp = {'positionX' : event.clientX - canvas.canvasElement.offsetLeft, 'positionY' : event.clientY + + canvas.canvasElement.offsetTop, 'width' : 1, 'height' : 1};
+    var temp = {'positionX' : event.clientX - canvas.canvasElement.offsetLeft, 'positionY' : event.clientY - canvas.canvasElement.offsetTop, 'width' : 1, 'height' : 1};
     for(var i in Menu.buttons)
     {
-        if(areColliding(temp, Menu.buttons[i]))
+        if(areColliding(temp, Menu.buttons[i]) && Menu.buttons[i].name === 'play')
         {
-            Menu.buttons[i].width = 250;
-            console.log('1');
+            Game.gameOver = false;
         }
         else
         {
             Menu.buttons[i].width = 167;
+        }
+    }
+    
+}
+
+function mouseOver(event)
+{
+    var temp = {'positionX' : event.clientX - canvas.canvasElement.offsetLeft, 'positionY' : event.clientY - canvas.canvasElement.offsetTop, 'width' : 1, 'height' : 1};
+    for(var i in Menu.buttons)
+    {
+        if(areColliding(temp, Menu.buttons[i]))
+        {
+            Menu.buttons[i].version = 1;
+        }
+        else
+        {
+            Menu.buttons[i].version = 0;
         }
     }
 }
@@ -228,9 +244,9 @@ function loadResources()
         explosionEffect.push(createImage('resources/Effects/Explosion/Explosion_' + i + '.png'));
     }
     
-    menuScreenImages['play'] = createImage('resources/Menu/Play.png');
-    menuScreenImages['credits'] = createImage('resources/Menu/Credits.png');
-    menuScreenImages['exit'] = createImage('resources/Menu/Exit.png');
+    menuScreenImages['play'] = [createImage('resources/Menu/Play.png'), createImage('resources/Menu/Play-hover.png')];
+    menuScreenImages['credits'] = [createImage('resources/Menu/Credits.png'), createImage('resources/Menu/Credits-hover.png')];
+    menuScreenImages['exit'] = [createImage('resources/Menu/Exit.png'),createImage('resources/Menu/Exit-hover.png')];
     
     bulletImages.push(createImage('resources/bullet.png'));
     bulletImages.push(createImage('resources/bullet-enemies.png'));  
@@ -529,6 +545,7 @@ function areColliding(objectOne, objectTwo)
 
 function Button(tag, posY)
 {
+    this.version = 0;
     this.name = tag;
     this.width = 167;
     this.height = 105;
