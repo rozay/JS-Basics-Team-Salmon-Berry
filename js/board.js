@@ -2,6 +2,7 @@ window.onload = init;
 var enemyImages = [];
 var bulletImages = [];
 var bonusImages = [];
+var explosionEffect = [];
 var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
 var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
 bgMusic.play();
@@ -35,6 +36,7 @@ var Game = {
     enemies : [],
     bullets : [],
     bonuses : [],
+    explosions : [],
     handleCollisions : function()
     {
         for(var i = 0; i < this.enemies.length;i++)
@@ -48,6 +50,7 @@ var Game = {
                 {
                     if(this.enemies[i].chanceForBonus >= 0 && this.enemies[i].chanceForBonus <= 10)
                         this.bonuses.push(new Bonus(this.enemies[i].positionX,this.enemies[i].positionY));
+                    this.explosions.push(new Explosion(this.enemies[i].positionX - 200,this.enemies[i].positionY - 200));
                     this.enemies.splice(i, 1);
                     this.bullets.splice(j, 1);
                     player.score += Game.level * 10;
@@ -83,6 +86,7 @@ var Game = {
               this.enemies[i].positionY <= player.positionY + player.height)
             {
                 player.lives -= 1;
+                this.enemies.splice(i,1);
                 checkLives();
             }
             else
@@ -196,7 +200,14 @@ function loadResources()
         tempImage.src = 'resources/enemy.png';
         enemyImages.push(tempImage);
     }
-
+    
+    for(var i = 1; i <= 10; i++)
+    {
+        var tempImage = new Image();
+        tempImage.src = 'resources/Effects/Explosion/Explosion_' + i + '.png';
+        explosionEffect.push(tempImage);
+    }
+    
     var enemyBullet = new Image();
     var playerBullet = new Image();
     var doubleBullet = new Image();
@@ -254,6 +265,12 @@ function update() {
                 Game.bonuses.splice(i, 1);
             }
         }
+        for (var i = 0; i < Game.explosions.length; i++) {
+            Game.explosions[i].update();
+            if (Game.explosions[i].isFinished()) {
+                Game.explosions.splice(i, 1);
+            }
+        }
         Game.handleCollisions();
     }
 }
@@ -271,9 +288,13 @@ function drawEverything() {
         for (var i = 0; i < Game.bonuses.length; i++) {
             Game.bonuses[i].draw();
         }
+        for (var i = 0; i < Game.explosions.length; i++) {
+            Game.explosions[i].draw();
+        }
         for (var i = 0; i < Game.bullets.length; i++)
             Game.bullets[i].draw();
         player.draw();
+        
     } else {
         gameOver();
     }
@@ -358,6 +379,34 @@ function Bonus(posX, posY)
             return false;
         }
     };
+}
+
+function Explosion(posX, posY)
+{
+    this.positionX = posX;
+    this.positionY = posY;
+    this.currentFrame = 0;
+    this.frameRate = 0;
+    this.update = function()
+    {
+        this.frameRate += 1;
+        if(this.frameRate >= 3){
+            this.currentFrame++;
+            this.frameRate = 0;
+        }
+    };
+    this.isFinished = function()
+    {
+        if(this.currentFrame >= explosionEffect.length)
+            return true;
+        else
+            return false;
+    };
+    this.draw = function()
+    {
+        canvas.canvasContext.drawImage(explosionEffect[this.currentFrame],this.positionX,this.positionY);
+    };
+    
 }
 
 function keyDown(event) {
