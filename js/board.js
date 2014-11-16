@@ -251,7 +251,7 @@ function loadResources()
     bulletImages.push(createImage('resources/bullet.png'));
     bulletImages.push(createImage('resources/bullet-enemies.png'));  
     bonusImages.push(createImage('resources/bonuses/bullets.png'));
-    bonusImages.push('resources/bonuses/repairBonus.png');
+    bonusImages.push(createImage('resources/bonuses/repairBonus.png'));
 }
 
 function startGame() {
