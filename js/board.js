@@ -221,6 +221,8 @@ function mouseClick(event)
                 Game.gameStarted = true;
                 Menu.active = false;
                 startGame();
+            } else if (areColliding(temp, Menu.buttons[i]) && Menu.buttons[i].name === 'exit') {
+                close();
             }
         }
     } else if (Game.gameOver) {
@@ -522,21 +524,27 @@ function keyUp(event) {
 }
 
 function checkLives() {
+    player.positionX = undefined;
+    player.positionY = undefined;
+
     if (player.lives > 0) {
         reset();
     } else {
-        Game.gameOver = true;
-        //Menu.active = true;
-        Game.gameStarted = false;
+        setTimeout(function () {
+            Game.gameOver = true;
+            Game.gameStarted = false;
+        }, 1000);            
     }
 }
 
 function reset() {
-    player.positionX = 0;
-    player.positionY = canvas.height / 2 - player.height / 2;
     Game.bullets = [];
-    player.health = 100;
-
+    setTimeout(function () {
+        player.positionX = 0;
+        player.positionY = canvas.height / 2 - player.height / 2;
+        player.health = 100;
+    }, 500);
+    
 }
 
 function drawGUI() {
@@ -556,9 +564,6 @@ function gameOver() {
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('GAME OVER!', canvas.width / 2 - 90, canvas.height / 2);
     canvas.canvasContext.fillText('Your score: ' + player.score, canvas.width / 2 - 90, canvas.height / 2 + 50);
-    //canvas.canvasContext.fillRect(canvas.width / 2 - 150, canvas.height / 2 + 100, 110, 50);
-    //canvas.canvasContext.fillStyle = '#000';
-    //canvas.canvasContext.fillText('Play again?', canvas.width / 2 - 150, canvas.height / 2 + 130);
 }
 
 function createImage(path)
