@@ -33,7 +33,8 @@ var canvas = {
 var Game = {
     level : 1,
     enemiesPerLevel: 20,
-    gameOver: true,
+    gameOver: false,
+    gameStarted: false,
     enemies : [],
     bullets : [],
     bonuses : [],
@@ -112,6 +113,7 @@ var Game = {
 
 var Menu = 
 {
+    active: true,
     buttons : [new Button('play',50), new Button('credits', 227), new Button('exit',394)],
     draw : function()
     {
@@ -183,7 +185,7 @@ var player = {
 
 function init(e) {
     loadResources();
-    startGame();
+    //startGame();
     canvas.canvasElement.width = canvas.width;
     canvas.canvasElement.height = canvas.height;
     canvas.canvasContext = canvas.canvasElement.getContext('2d');
@@ -200,17 +202,23 @@ function init(e) {
 
 function mouseClick(event)
 {
-    var temp = {'positionX' : event.clientX - canvas.canvasElement.offsetLeft, 'positionY' : event.clientY - canvas.canvasElement.offsetTop, 'width' : 1, 'height' : 1};
-    for(var i in Menu.buttons)
-    {
-        if(areColliding(temp, Menu.buttons[i]) && Menu.buttons[i].name === 'play')
-        {
-            Game.gameOver = false;
+    var temp = { 'positionX': event.clientX - canvas.canvasElement.offsetLeft, 'positionY': event.clientY - canvas.canvasElement.offsetTop, 'width': 1, 'height': 1 };
+
+    if (Menu.active) {
+        for (var i in Menu.buttons) {
+            if (areColliding(temp, Menu.buttons[i]) && Menu.buttons[i].name === 'play') {
+                Game.gameOver = false;
+                Game.gameStarted = true;
+                Menu.active = false;
+                startGame();
+            }
+            else {
+                Menu.buttons[i].width = 167;
+            }
         }
-        else
-        {
-            Menu.buttons[i].width = 167;
-        }
+    } else if (Game.gameOver) {
+        Menu.active = true;
+        Game.gameOver = false;
     }
     
 }
@@ -256,32 +264,29 @@ function loadResources()
 
 function startGame() {
 
-    if (player.lives === 0) {
+    if (player.lives === 0) {       
         Game.level = 1;
         player.score = 0;
+        player.lives = 3;
+        Game.enemies = [];
+        reset();
     }
 
     player.positionX = 0;
     player.positionY = canvas.height / 2 - player.height / 2;
-
-    for (var i = 0; i < Game.enemiesPerLevel; i++) {
-        Game.enemies.push(new Enemy());
-    }
+    addEnemies();
+    
 }
 
 function gameLoop() {
     update();
     drawEverything();
-
-    if (player.lives == 0) {
-        Game.gameOver = true;
-    } 
 }
 
 function update() {
     canvas.updateStars();
 
-    if (!Game.gameOver) {
+    if (Game.gameStarted) {
         player.update();
         for (var i = 0; i < Game.bullets.length; i++)
             Game.bullets[i].update();
@@ -300,6 +305,7 @@ function update() {
             }
         }
         Game.handleCollisions();
+        levelUp();
     }
 }
 
@@ -308,7 +314,10 @@ function drawEverything() {
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
     canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsOneX,0);
     canvas.canvasContext.drawImage(canvas.starsLayer, canvas.starsTwoX, 0);
-    if (!Game.gameOver) {
+
+    if (Menu.active) {
+        Menu.draw();
+    } else if (Game.gameStarted) {
         drawGUI();
         for (var i = 0; i < Game.enemies.length; i++) {
             Game.enemies[i].draw();
@@ -321,10 +330,9 @@ function drawEverything() {
         }
         for (var i = 0; i < Game.bullets.length; i++)
             Game.bullets[i].draw();
-        player.draw();
-        
-    } else {
-        Menu.draw();
+        player.draw();        
+    } else if (Game.gameOver) {
+        gameOver();
     }
 }
 
@@ -334,8 +342,8 @@ function Enemy()
     this.width = 50;
     this.height = 50;
     this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
-    this.positionY = Math.round(Math.random() * (canvas.height - 40));
-    this.speed = Math.random() + Game.level;
+    this.positionY = Math.round(Math.random() * (canvas.height - 50));
+    this.speed = Math.random() + Game.level / 3;
     this.typeEnemy = Math.round(Math.random() * 3);
     this.chanceForBonus = Math.round(Math.random() * 80);
     this.draw = function () 
@@ -350,8 +358,10 @@ function Enemy()
     };
     this.outOfBoundsCheck = function () 
     {
-        if (this.positionX < 0 - this.width)
+        if (this.positionX < 0 - this.width) {
             this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
+            this.positionY = Math.round(Math.random() * (canvas.height - 50));
+        }
     };
 }
 
@@ -497,6 +507,10 @@ function keyUp(event) {
 function checkLives() {
     if (player.lives > 0) {
         reset();
+    } else {
+        Game.gameOver = true;
+        //Menu.active = true;
+        Game.gameStarted = false;
     }
 }
 
@@ -505,6 +519,7 @@ function reset() {
     player.positionY = canvas.height / 2 - player.height / 2;
     Game.bullets = [];
     player.health = 100;
+
 }
 
 function drawGUI() {
@@ -551,4 +566,17 @@ function Button(tag, posY)
     this.height = 105;
     this.positionX = canvas.width / 2 - 83;
     this.positionY = posY;
+}
+
+function levelUp() {
+    if (Game.enemies.length === 0) {
+        Game.level++;
+        addEnemies();
+    }
+}
+
+function addEnemies() {
+    for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
+        Game.enemies.push(new Enemy());
+    }
 }
