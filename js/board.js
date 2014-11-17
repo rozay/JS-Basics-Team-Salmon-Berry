@@ -114,7 +114,8 @@ var Game = {
 var Menu = 
 {
     active: true,
-    buttons : [new Button('play',50), new Button('credits', 227), new Button('exit',394)],
+    buttons: [new Button('play', 50), new Button('credits', 227), new Button('exit', 394)],
+    gameOverButtons: [new gameOverButton('playAgain', canvas.width / 2 - 150), new gameOverButton('menu', canvas.width / 2)],
     draw : function()
     {
         for(var i in this.buttons)
@@ -122,6 +123,15 @@ var Menu =
             canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                           this.buttons[i].positionX, this.buttons[i].positionY,
                                           this.buttons[i].width, this.buttons[i].height);
+        }
+    },
+    drawGameOver : function()
+    {
+        for(var i in this.gameOverButtons)
+        {
+            canvas.canvasContext.drawImage(menuScreenImages[this.gameOverButtons[i].name][this.gameOverButtons[i].version],
+            this.gameOverButtons[i].positionX, this.gameOverButtons[i].positionY,
+            this.gameOverButtons[i].width, this.gameOverButtons[i].height);
         }
     }
 }
@@ -212,15 +222,19 @@ function mouseClick(event)
                 Menu.active = false;
                 startGame();
             }
-            else {
-                Menu.buttons[i].width = 167;
-            }
         }
     } else if (Game.gameOver) {
-        Menu.active = true;
-        Game.gameOver = false;
-    }
-    
+        for (var i in Menu.gameOverButtons) {
+            if (areColliding(temp, Menu.gameOverButtons[i]) && Menu.gameOverButtons[i].name === 'playAgain') {
+                Game.gameOver = false;
+                Game.gameStarted = true;
+                startGame();
+            } else if (areColliding(temp, Menu.gameOverButtons[i]) && Menu.gameOverButtons[i].name === 'menu') {            
+                Menu.active = true;
+                Game.gameOver = false;
+            } 
+        }               
+    }   
 }
 
 function mouseOver(event)
@@ -254,7 +268,9 @@ function loadResources()
     
     menuScreenImages['play'] = [createImage('resources/Menu/Play.png'), createImage('resources/Menu/Play-hover.png')];
     menuScreenImages['credits'] = [createImage('resources/Menu/Credits.png'), createImage('resources/Menu/Credits-hover.png')];
-    menuScreenImages['exit'] = [createImage('resources/Menu/Exit.png'),createImage('resources/Menu/Exit-hover.png')];
+    menuScreenImages['exit'] = [createImage('resources/Menu/Exit.png'), createImage('resources/Menu/Exit-hover.png')];
+    menuScreenImages['playAgain'] = [createImage('resources/Menu/Options.png'), createImage('resources/Menu/Options-hover.png')]; //add
+    menuScreenImages['menu'] = [createImage('resources/Menu/Options.png'), createImage('resources/Menu/Options-hover.png')]; //add
     
     bulletImages.push(createImage('resources/bullet.png'));
     bulletImages.push(createImage('resources/bullet-enemies.png'));  
@@ -333,6 +349,7 @@ function drawEverything() {
         player.draw();        
     } else if (Game.gameOver) {
         gameOver();
+        Menu.drawGameOver();
     }
 }
 
@@ -538,6 +555,10 @@ function gameOver() {
     canvas.canvasContext.font = 'bold 20px Arial';
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('GAME OVER!', canvas.width / 2 - 90, canvas.height / 2);
+    canvas.canvasContext.fillText('Your score: ' + player.score, canvas.width / 2 - 90, canvas.height / 2 + 50);
+    //canvas.canvasContext.fillRect(canvas.width / 2 - 150, canvas.height / 2 + 100, 110, 50);
+    //canvas.canvasContext.fillStyle = '#000';
+    //canvas.canvasContext.fillText('Play again?', canvas.width / 2 - 150, canvas.height / 2 + 130);
 }
 
 function createImage(path)
@@ -558,8 +579,7 @@ function areColliding(objectOne, objectTwo)
         return false;
 }
 
-function Button(tag, posY)
-{
+function Button(tag, posY) {
     this.version = 0;
     this.name = tag;
     this.width = 167;
@@ -575,8 +595,22 @@ function levelUp() {
     }
 }
 
+
+
+
+//********************************
+
 function addEnemies() {
     for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
         Game.enemies.push(new Enemy());
     }
+}
+
+function gameOverButton(tag, posX) {
+    this.version = 0,
+    this.name = tag;
+    this.width = 110;
+    this.height = 70;
+    this.positionX = posX;
+    this.positionY = canvas.height / 2 + 130;
 }
