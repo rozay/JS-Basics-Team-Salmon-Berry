@@ -115,7 +115,7 @@ var Menu =
 {
     active: true,
     buttons: [new Button('play', 50), new Button('credits', 227), new Button('exit', 394)],
-    gameOverButtons: [new gameOverButton('playAgain', canvas.width / 2 - 150), new gameOverButton('menu', canvas.width / 2)],
+    gameOverButtons: [new gameOverButton('playAgain', canvas.width / 2 - 200), new gameOverButton('menu', canvas.width / 2)],
     draw : function()
     {
         for(var i in this.buttons)
@@ -241,18 +241,28 @@ function mouseClick(event)
 
 function mouseOver(event)
 {
-    var temp = {'positionX' : event.clientX - canvas.canvasElement.offsetLeft, 'positionY' : event.clientY - canvas.canvasElement.offsetTop, 'width' : 1, 'height' : 1};
-    for(var i in Menu.buttons)
-    {
-        if(areColliding(temp, Menu.buttons[i]))
-        {
-            Menu.buttons[i].version = 1;
+    var temp = { 'positionX': event.clientX - canvas.canvasElement.offsetLeft, 'positionY': event.clientY - canvas.canvasElement.offsetTop, 'width': 1, 'height': 1 };
+
+    if (Menu.active) {
+        for (var i in Menu.buttons) {
+            if (areColliding(temp, Menu.buttons[i])) {
+                Menu.buttons[i].version = 1;
+            }
+            else {
+                Menu.buttons[i].version = 0;
+            }
         }
-        else
-        {
-            Menu.buttons[i].version = 0;
+    } else if (Game.gameOver) {
+        for (var i in Menu.gameOverButtons) {
+            if (areColliding(temp, Menu.gameOverButtons[i])) {
+                Menu.gameOverButtons[i].version = 1;
+            }
+            else {
+                Menu.gameOverButtons[i].version = 0;
+            }
         }
     }
+    
 }
 
 function loadResources()
@@ -271,8 +281,8 @@ function loadResources()
     menuScreenImages['play'] = [createImage('resources/Menu/Play.png'), createImage('resources/Menu/Play-hover.png')];
     menuScreenImages['credits'] = [createImage('resources/Menu/Credits.png'), createImage('resources/Menu/Credits-hover.png')];
     menuScreenImages['exit'] = [createImage('resources/Menu/Exit.png'), createImage('resources/Menu/Exit-hover.png')];
-    menuScreenImages['playAgain'] = [createImage('resources/Menu/Options.png'), createImage('resources/Menu/Options-hover.png')]; //add
-    menuScreenImages['menu'] = [createImage('resources/Menu/Options.png'), createImage('resources/Menu/Options-hover.png')]; //add
+    menuScreenImages['playAgain'] = [createImage('resources/Menu/again.png'), createImage('resources/Menu/Options.png')]; //add
+    menuScreenImages['menu'] = [createImage('resources/Menu/Options.png'), createImage('resources/Menu/again.png')]; //add
     
     bulletImages.push(createImage('resources/bullet.png'));
     bulletImages.push(createImage('resources/bullet-enemies.png'));  
@@ -600,9 +610,6 @@ function levelUp() {
     }
 }
 
-
-
-
 //********************************
 
 function addEnemies() {
@@ -614,8 +621,8 @@ function addEnemies() {
 function gameOverButton(tag, posX) {
     this.version = 0,
     this.name = tag;
-    this.width = 110;
-    this.height = 70;
+    this.width = 167;
+    this.height = 105;
     this.positionX = posX;
     this.positionY = canvas.height / 2 + 130;
 }
