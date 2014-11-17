@@ -5,6 +5,8 @@ var bonusImages = [];
 var explosionEffect = [];
 var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
 var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
+var explosionSound = new Audio("resources/sounds/explosion.mp3");
+var bonus = new Audio("resources/sounds/bonus.mp3");
 var menuScreenImages = [];
 bgMusic.play();
 bgMusic.volume = 0.2;
@@ -423,6 +425,7 @@ function Bullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY)
 
 function Bonus(posX, posY)
 {
+    bonus.play();
     this.width  = 60;
     this.height = 40;
     this.positionX = posX;
@@ -450,6 +453,7 @@ function Bonus(posX, posY)
 
 function Explosion(posX, posY)
 {
+    explosionSound.play();
     this.positionX = posX;
     this.positionY = posY;
     this.currentFrame = 0;
