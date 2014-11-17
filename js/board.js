@@ -8,9 +8,12 @@ var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
 var explosionSound = new Audio("resources/sounds/explosion.mp3");
 var bonus = new Audio("resources/sounds/bonus.mp3");
 var menuScreenImages = [];
-bgMusic.play();
-bgMusic.volume = 0.2;
-bgMusic.loop = true;
+
+var GAME_STATES = {'Menu' : 0, 'Playing' : 1, 'GameOver' : 2};
+var MENU_BUTTONS_WIDTH = 167;
+var MENU_BUTTONS_HEIGHT = 105;
+
+var GAME_OVER_BUTTONS_Y;
 
 var canvas = {
     canvasElement : document.getElementById('canvas'),
@@ -35,8 +38,7 @@ var canvas = {
 var Game = {
     level : 1,
     enemiesPerLevel: 20,
-    gameOver: false,
-    gameStarted: false,
+    gameState : GAME_STATES.Menu,
     enemies : [],
     bullets : [],
     bonuses : [],
@@ -58,9 +60,9 @@ var Game = {
                     break;
                 }
                 else if(this.bullets[j].owner === 'enemy' && areColliding(this.bullets[j], player) === true)
-                {                    
-                    this.bullets.splice(j, 1);
+                {             
                     player.health -= this.bullets[j].hitPoint;
+                    this.bullets.splice(j, 1);
                     if (player.health <= 0) {
                         player.lives--;
                         checkLives();
@@ -115,25 +117,26 @@ var Game = {
 
 var Menu = 
 {
-    active: true,
-    buttons: [new Button('play', 50), new Button('credits', 227), new Button('exit', 394)],
-    gameOverButtons: [new gameOverButton('playAgain', canvas.width / 2 - 180), new gameOverButton('menu', canvas.width / 2 + 10)],
+    buttons: [new Button('play', canvas.width / 2 - 83, 50), new Button('credits', canvas.width / 2 - 83, 227), 
+    new Button('exit', canvas.width / 2 - 83, 394), 
+    new Button('playAgain', canvas.width / 2 - 180, canvas.height / 2 + 20),
+    new Button('menu', canvas.width / 2 + 10, canvas.height / 2 + 20)],
     draw : function()
     {
         for(var i in this.buttons)
         {
+            if(Game.gameState === GAME_STATES.Menu && (this.buttons[i].name === 'play' || this.buttons[i].name === 'credits' || this.buttons[i].name === 'exit'))
+            {
             canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                           this.buttons[i].positionX, this.buttons[i].positionY,
                                           this.buttons[i].width, this.buttons[i].height);
-        }
-    },
-    drawGameOver : function()
-    {
-        for(var i in this.gameOverButtons)
-        {
-            canvas.canvasContext.drawImage(menuScreenImages[this.gameOverButtons[i].name][this.gameOverButtons[i].version],
-            this.gameOverButtons[i].positionX, this.gameOverButtons[i].positionY,
-            this.gameOverButtons[i].width, this.gameOverButtons[i].height);
+            }
+            else if(Game.gameState === GAME_STATES.GameOver && (this.buttons[i].name === 'playAgain' || this.buttons[i].name === 'menu'))
+            {
+            canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
+                                          this.buttons[i].positionX, this.buttons[i].positionY,
+                                          this.buttons[i].width, this.buttons[i].height);
+            }
         }
     }
 }
@@ -196,7 +199,7 @@ var player = {
 }
 
 function init(e) {
-    loadResources();
+    loadResources(); 
     canvas.canvasElement.width = canvas.width;
     canvas.canvasElement.height = canvas.height;
     canvas.canvasContext = canvas.canvasElement.getContext('2d');
@@ -208,34 +211,55 @@ function init(e) {
     document.addEventListener('keyup', keyUp, false);
     document.addEventListener("mousemove", mouseOver);
     document.addEventListener("click", mouseClick);
+    
+    bgMusic.play();
+    bgMusic.volume = 0.2;
+    bgMusic.loop = true;
     setInterval(gameLoop, 1000 / 60);
+    
+    MENU_BUTTONS_X = canvas.width / 2 - 83;
+    GAME_OVER_BUTTONS_Y = canvas.height / 2 + 20;
 }
 
 function mouseClick(event)
 {
     var temp = { 'positionX': event.clientX - canvas.canvasElement.offsetLeft, 'positionY': event.clientY - canvas.canvasElement.offsetTop, 'width': 1, 'height': 1 };
 
-    if (Menu.active) {
-        for (var i in Menu.buttons) {
-            if (areColliding(temp, Menu.buttons[i]) && Menu.buttons[i].name === 'play') {
-                Game.gameOver = false;
-                Game.gameStarted = true;
-                Menu.active = false;
-                startGame();
-            } else if (areColliding(temp, Menu.buttons[i]) && Menu.buttons[i].name === 'exit') {
-                close();
-            }
-        }
-    } else if (Game.gameOver) {
-        for (var i in Menu.gameOverButtons) {
-            if (areColliding(temp, Menu.gameOverButtons[i]) && Menu.gameOverButtons[i].name === 'playAgain') {
-                Game.gameOver = false;
-                Game.gameStarted = true;
-                startGame();
-            } else if (areColliding(temp, Menu.gameOverButtons[i]) && Menu.gameOverButtons[i].name === 'menu') {            
-                Menu.active = true;
-                Game.gameOver = false;
+    if (Game.gameState === GAME_STATES.Menu) 
+    {
+        for (var i in Menu.buttons) 
+        {
+            if (areColliding(temp, Menu.buttons[i]))
+            {
+                if(Menu.buttons[i].name === 'play') 
+                {
+                    Game.gameState = GAME_STATES.Playing;
+                    startGame();
+                }
+                else if (Menu.buttons[i].name === 'exit')
+                {
+                    close();
+                }
             } 
+        }
+    } 
+    else if (Game.gameState === GAME_STATES.GameOver) 
+    {
+        for (var i in Menu.buttons) 
+        {
+            if (areColliding(temp, Menu.buttons[i]))
+            {
+                if(Menu.buttons[i].name === 'playAgain') 
+                {
+                    Game.gameState = GAME_STATES.Playing;
+                    startGame();
+                }
+            
+                else if (Menu.buttons[i].name === 'menu')
+                {            
+                    Game.gameState = GAME_STATES.Menu;
+                } 
+            }  
         }               
     }   
 }
@@ -244,7 +268,7 @@ function mouseOver(event)
 {
     var temp = { 'positionX': event.clientX - canvas.canvasElement.offsetLeft, 'positionY': event.clientY - canvas.canvasElement.offsetTop, 'width': 1, 'height': 1 };
 
-    if (Menu.active) {
+    if (Game.gameState === GAME_STATES.Menu || Game.gameState === GAME_STATES.GameOver) {
         for (var i in Menu.buttons) {
             if (areColliding(temp, Menu.buttons[i])) {
                 Menu.buttons[i].version = 1;
@@ -253,21 +277,10 @@ function mouseOver(event)
                 Menu.buttons[i].version = 0;
             }
         }
-    } else if (Game.gameOver) {
-        for (var i in Menu.gameOverButtons) {
-            if (areColliding(temp, Menu.gameOverButtons[i])) {
-                Menu.gameOverButtons[i].version = 1;
-            }
-            else {
-                Menu.gameOverButtons[i].version = 0;
-            }
-        }
-    }
-    
+    } 
 }
 
 function loadResources()
-
 {
     for(var i = 1; i <= 4;i++)
     {
@@ -315,7 +328,8 @@ function gameLoop() {
 function update() {
     canvas.updateStars();
 
-    if (Game.gameStarted) {
+    if (Game.gameState === GAME_STATES.Playing)
+    {
         player.update();
         for (var i = 0; i < Game.bullets.length; i++)
             Game.bullets[i].update();
@@ -344,9 +358,10 @@ function drawEverything() {
     canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsOneX,0);
     canvas.canvasContext.drawImage(canvas.starsLayer, canvas.starsTwoX, 0);
 
-    if (Menu.active) {
+    if (Game.gameState === GAME_STATES.Menu) 
+    {
         Menu.draw();
-    } else if (Game.gameStarted) {
+    } else if (Game.gameState === GAME_STATES.Playing) {
         drawGUI();
         for (var i = 0; i < Game.enemies.length; i++) {
             Game.enemies[i].draw();
@@ -360,9 +375,9 @@ function drawEverything() {
         for (var i = 0; i < Game.bullets.length; i++)
             Game.bullets[i].draw();
         player.draw();        
-    } else if (Game.gameOver) {
+    } else if (Game.gameState === GAME_STATES.GameOver) {
         gameOver();
-        Menu.drawGameOver();
+        Menu.draw();
     }
 }
 
@@ -544,8 +559,7 @@ function checkLives() {
         reset();
     } else {
         setTimeout(function () {
-            Game.gameOver = true;
-            Game.gameStarted = false;
+            Game.gameState = GAME_STATES.GameOver;
         }, 1000);            
     }
 }
@@ -599,12 +613,12 @@ function areColliding(objectOne, objectTwo)
         return false;
 }
 
-function Button(tag, posY) {
+function Button(tag, posX, posY) {
     this.version = 0;
     this.name = tag;
-    this.width = 167;
-    this.height = 105;
-    this.positionX = canvas.width / 2 - 83;
+    this.width = MENU_BUTTONS_WIDTH;
+    this.height = MENU_BUTTONS_HEIGHT;
+    this.positionX = posX;
     this.positionY = posY;
 }
 
@@ -619,13 +633,4 @@ function addEnemies() {
     for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
         Game.enemies.push(new Enemy());
     }
-}
-
-function gameOverButton(tag, posX) {
-    this.version = 0,
-    this.name = tag;
-    this.width = 167;
-    this.height = 105;
-    this.positionX = posX;
-    this.positionY = canvas.height / 2 + 20;
 }
