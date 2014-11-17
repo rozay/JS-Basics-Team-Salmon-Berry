@@ -3,11 +3,15 @@ var enemyImages = [];
 var bulletImages = [];
 var bonusImages = [];
 var explosionEffect = [];
+var playerAnimation = [];
+var mineAnimation = [];
+var bombAnimation = [];
+
+var menuScreenImages = [];
 var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
 var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
 var explosionSound = new Audio("resources/sounds/explosion.mp3");
 var bonus = new Audio("resources/sounds/bonus.mp3");
-var menuScreenImages = [];
 
 var GAME_STATES = {'Menu' : 0, 'Playing' : 1, 'GameOver' : 2};
 var MENU_BUTTONS_WIDTH = 167;
@@ -42,11 +46,35 @@ var Game = {
     enemies : [],
     bullets : [],
     bonuses : [],
+    mines : [],
+    bombs : [],
     explosions : [],
     handleCollisions : function()
     {
         for(var i = 0; i < this.enemies.length;i++)
         {
+            for(var j = 0; j < this.mines.length; j++)
+            {
+                if(areColliding(this.enemies[i], this.mines[j]) === true)
+                {
+                    this.explosions.push(new Explosion(this.enemies[i].positionX - 200, this.enemies[i].positionY - 200));
+                    this.enemies.splice(i,1);
+                    var temp = {'positionX' : this.mines[j].positionX - this.mines[j].rangeWidth / 2, 
+                                'positionY' : this.mines[j].positionY - this.mines[j].rangeHeight / 2,
+                                'width' : this.mines[j].rangeWidth,
+                                'height' : this.mines[j].rangeHeight};
+                    for(var k = 0; k < this.enemies.length; k++)
+                    {
+                        if(areColliding(temp, this.enemies[k]) === true)
+                        {
+                             this.explosions.push(new Explosion(this.enemies[k].positionX - 200, this.enemies[k].positionY - 200));
+                            this.enemies.splice(k,1);    
+                        }
+                    }
+                    this.mines.splice(j,1);
+                }
+            }
+            
             for(var j = 0; j < this.bullets.length;j++)
             {
                 if(this.bullets[j].owner === 'player' && areColliding(this.bullets[j], this.enemies[i]) === true)
@@ -69,7 +97,7 @@ var Game = {
                     }
                 }
                 
-                if (this.bullets.length != 0) {
+                if (this.bullets.length != 0 && this.bullets[j]) {
                     if (this.bullets[j].positionX > canvas.width
                   || this.bullets[j].positionX < 0) {
                         this.bullets.splice(j, 1);
@@ -95,6 +123,26 @@ var Game = {
                             1, this.enemies[i].positionX, 
                             this.enemies[i].positionY + this.enemies[i].height / 4));
                 }
+            }
+        }
+        
+        for(var j = 0; j < this.bombs.length; j++)
+        {
+            if(this.bombs[j].timeToExplode() === true)
+            {
+                var temp = {'positionX' : this.bombs[j].positionX - this.bombs[j].radiusWidth / 2, 
+                            'positionY' : this.bombs[j].positionY - this.bombs[j].radiusHeight / 2,
+                            'width' : this.bombs[j].radiusHeight,
+                            'height' : this.bombs[j].radiusWidth};
+                for(var k = 0; k < this.enemies.length; k++)
+                {
+                    if(areColliding(temp, this.enemies[k]) === true)
+                    {
+                         this.explosions.push(new Explosion(this.enemies[k].positionX - 200, this.enemies[k].positionY - 200));
+                        this.enemies.splice(k,1);    
+                    }
+                }
+                this.bombs.splice(j,1);
             }
         }
         
@@ -292,6 +340,21 @@ function loadResources()
         explosionEffect.push(createImage('resources/Effects/Explosion/Explosion_' + i + '.png'));
     }
     
+    for(var i = 1; i <= 8; i++)
+    {
+        playerAnimation.push(createImage('resources/player/Animation/' + i + '.png'));
+    }
+    
+    for(var i = 1; i <= 2; i++)
+    {
+        mineAnimation.push(createImage('resources/Weapons/Mine/' + i + '.png'));
+    }
+    
+    for(var i = 1; i <= 3; i++)
+    {
+        bombAnimation.push(createImage('resources/Weapons/Bomb/' + i + '.png'));
+    }
+    
     menuScreenImages['play'] = [createImage('resources/Menu/Play.png'), createImage('resources/Menu/Play-hover.png')];
     menuScreenImages['credits'] = [createImage('resources/Menu/Credits.png'), createImage('resources/Menu/Credits-hover.png')];
     menuScreenImages['exit'] = [createImage('resources/Menu/Exit.png'), createImage('resources/Menu/Exit-hover.png')];
@@ -347,6 +410,11 @@ function update() {
                 Game.explosions.splice(i, 1);
             }
         }
+        for (var i = 0; i < Game.mines.length; i++)
+            Game.mines[i].update();
+        for (var i = 0; i < Game.bombs.length; i++)
+            Game.bombs[i].update();
+        
         Game.handleCollisions();
         levelUp();
     }
@@ -374,6 +442,10 @@ function drawEverything() {
         }
         for (var i = 0; i < Game.bullets.length; i++)
             Game.bullets[i].draw();
+        for (var i = 0; i < Game.mines.length; i++)
+            Game.mines[i].draw();
+        for (var i = 0; i < Game.bombs.length; i++)
+            Game.bombs[i].draw();
         player.draw();        
     } else if (Game.gameState === GAME_STATES.GameOver) {
         gameOver();
@@ -407,6 +479,71 @@ function Enemy()
             this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
             this.positionY = Math.round(Math.random() * (canvas.height - 50));
         }
+    };
+}
+
+function Mine(posX, posY)
+{
+    this.positionX = posX;
+    this.positionY = posY;
+    this.width = 50;
+    this.height = 50;
+    this.rangeWidth = 500;
+    this.rangeHeight = 500;
+    this.currentFrame = 0;
+    this.delay = 10;
+    this.currentTime = 0;
+    this.draw = function()
+    {
+        canvas.canvasContext.drawImage(mineAnimation[this.currentFrame], this.positionX, this.positionY);
+    };
+    this.update = function()
+    {
+        this.currentTime += 1;
+        if(this.currentTime >= this.delay)
+        {
+            this.currentTime = 0;
+            this.currentFrame += 1;
+        }
+        if(this.currentFrame >= mineAnimation.length)
+            this.currentFrame = 0;
+    };
+}
+
+function Bomb(posX, posY)
+{
+    this.positionX = posX;
+    this.positionY = posY;
+    this.width = 50;
+    this.height = 35;
+    this.radiusWidth = 500;
+    this.radiusHeight = 500;
+    this.timeBeforeExplode = 10;
+    this.currentFrame = 0;
+    this.delay = 10;
+    this.currentTime = 0;
+    this.draw = function()
+    {
+        canvas.canvasContext.drawImage(bombAnimation[this.currentFrame], this.positionX, this.positionY);
+    };
+    this.update = function()
+    {
+        this.timeBeforeExplode -= 0.05;
+        this.currentTime += 1;
+        if(this.currentTime >= this.delay)
+        {
+            this.currentTime = 0;
+            this.currentFrame += 1;
+        }
+        if(this.currentFrame >= bombAnimation.length)
+            this.currentFrame = 0;
+    };
+    this.timeToExplode = function()
+    {
+        if(this.timeBeforeExplode <= 0)
+            return true;
+        else
+            return false;
     };
 }
 
@@ -495,59 +632,73 @@ function Explosion(posX, posY)
 }
 
 function keyDown(event) {
-    if (event.keyCode == 39){
-        player.movingRight = true;
-        player.playerImage.src = 'resources/player/forward.png';
-    }
-    else if (event.keyCode == 37){
-        player.movingLeft = true;
-        player.playerImage.src = 'resources/player/back.png';
-    }
-    if (event.keyCode == 38){
-        player.movingUp = true;
-        player.playerImage.src = 'resources/player/left.png';
-    }
-    else if (event.keyCode == 40){
-        player.movingDown = true;
-        player.playerImage.src = 'resources/player/right.png';
-    }
-   
-    if(event.keyCode == 88)
+    if(Game.gameState === GAME_STATES.Playing)
     {
-        bulletSound.play();
-        if(player.doubleGuns === true){
-            Game.bullets.push(new Bullet('player', 10, player.speed, 
-                        0, player.positionX + player.width, player.positionY));
-            Game.bullets.push(new Bullet('player', 10, player.speed,
-                        0, player.positionX + player.width, player.positionY + player.height - 10));
+        if (event.keyCode == 39){
+            player.movingRight = true;
+            player.playerImage.src = 'resources/player/forward.png';
         }
-        else{
-            Game.bullets.push(new Bullet('player', 10, player.speed,
-                        0, player.positionX + player.width, 
-                        player.positionY + player.health / 4));
+        else if (event.keyCode == 37){
+            player.movingLeft = true;
+            player.playerImage.src = 'resources/player/back.png';
+        }
+        if (event.keyCode == 38){
+            player.movingUp = true;
+            player.playerImage.src = 'resources/player/left.png';
+        }
+        else if (event.keyCode == 40){
+            player.movingDown = true;
+            player.playerImage.src = 'resources/player/right.png';
+        }
+
+        if(event.keyCode == 88)
+        {
+            bulletSound.play();
+            if(player.doubleGuns === true){
+                Game.bullets.push(new Bullet('player', 10, player.speed, 
+                            0, player.positionX + player.width, player.positionY));
+                Game.bullets.push(new Bullet('player', 10, player.speed,
+                            0, player.positionX + player.width, player.positionY + player.height - 10));
+            }
+            else{
+                Game.bullets.push(new Bullet('player', 10, player.speed,
+                            0, player.positionX + player.width, 
+                            player.positionY + player.health / 4));
+            }
+        }
+        if(event.keyCode == 77)
+        {
+            Game.mines.push(new Mine(player.positionX, player.positionY));
+        }
+        if(event.keyCode == 66)
+        {
+            Game.bombs.push(new Bomb(player.positionX, player.positionY));
         }
     }
 }
 
 function keyUp(event) {
-    if (event.keyCode == 39){
-        player.movingRight = false;
-        player.playerImage.src = 'resources/player/main.png';
+    if(Game.gameState === GAME_STATES.Playing)
+    {
+        if (event.keyCode == 39){
+            player.movingRight = false;
+            player.playerImage.src = 'resources/player/main.png';
 
-    }
-    else if (event.keyCode == 37){
-        player.movingLeft = false;
-        player.playerImage.src = 'resources/player/main.png';
+        }
+        else if (event.keyCode == 37){
+            player.movingLeft = false;
+            player.playerImage.src = 'resources/player/main.png';
 
-    }
-    if (event.keyCode == 38){
-        player.movingUp = false;
-        player.playerImage.src = 'resources/player/main.png';
+        }
+        if (event.keyCode == 38){
+            player.movingUp = false;
+            player.playerImage.src = 'resources/player/main.png';
 
-    }
-    else if (event.keyCode == 40){
-        player.movingDown = false;
-        player.playerImage.src = 'resources/player/main.png';
+        }
+        else if (event.keyCode == 40){
+            player.movingDown = false;
+            player.playerImage.src = 'resources/player/main.png';
+        }
     }
 }
 
