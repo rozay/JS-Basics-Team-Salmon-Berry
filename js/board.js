@@ -212,6 +212,8 @@ var player = {
     speed : 3,
     health: 100,
     lives: 3,
+    bombs: 1,
+    mines: 1,
     doubleGuns : false,
     doubleGunsTime : 10,
     score: 0,
@@ -677,13 +679,15 @@ function keyDown(event) {
                             player.positionY + player.health / 4));
             }
         }
-        if(event.keyCode == 77)
+        if(event.keyCode == 77 && player.mines > 0)
         {
             Game.mines.push(new Mine(player.positionX, player.positionY));
+            player.mines--;
         }
-        if(event.keyCode == 66)
+        if(event.keyCode == 66 && player.bombs > 0)
         {
             Game.bombs.push(new Bomb(player.positionX, player.positionY));
+            player.bombs--;
         }
     }
 }
@@ -735,6 +739,8 @@ function reset() {
         player.positionX = 0;
         player.positionY = canvas.height / 2 - player.height / 2;
         player.health = 100;
+        player.bombs = 1;
+        player.mines = 1;
     }, 500);
     
 }
@@ -744,6 +750,8 @@ function drawGUI() {
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 30);
     canvas.canvasContext.fillText('Score:   ' + player.score, 10, 50);
+    canvas.canvasContext.fillText('Bombs:   ' + player.bombs, 10, 70);
+    canvas.canvasContext.fillText('Mines:   ' + player.mines, 10, 90);
     canvas.canvasContext.strokeStyle = '#fff';
     canvas.canvasContext.lineWidth = 3;
     canvas.canvasContext.strokeRect(5,canvas.height - 45, 106, 36);
@@ -790,6 +798,8 @@ function Button(tag, posX, posY) {
 function levelUp() {
     if (Game.enemies.length === 0) {
         Game.level++;
+        player.bombs++;
+        player.mines++;
         addEnemies();
     }
 }
@@ -802,24 +812,24 @@ function addEnemies() {
 
 function instructions() {
     var keys = {
-        up: 'Move Up: UP arrow',
-        down: 'Move Down: Down arrow',
-        left: 'Move Left: LEFT arrow',
-        right: 'Move Right: RIGHT arrow',
-        fire: 'Fire: X',
-        bomb: 'Drop Bomb: B',
-        mine: 'Drop Mine: M'
+        up: 'Move Up:   UP arrow',
+        down: 'Move Down:   Down arrow',
+        left: 'Move Left:   LEFT arrow',
+        right: 'Move Right:   RIGHT arrow',
+        fire: 'Fire:   X',
+        bomb: 'Drop Bomb:   B',
+        mine: 'Drop Mine:   M'
     }
+
+    var count = 0;
 
     canvas.canvasContext.font = 'bold 20px Arial';
     canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.fillText(keys.up, (canvas.width - canvas.canvasContext.measureText(keys.up).width) / 2, 100);
-    canvas.canvasContext.fillText(keys.down, (canvas.width - canvas.canvasContext.measureText(keys.down).width) / 2, 150);
-    canvas.canvasContext.fillText(keys.left, (canvas.width - canvas.canvasContext.measureText(keys.left).width) / 2, 200);
-    canvas.canvasContext.fillText(keys.right, (canvas.width - canvas.canvasContext.measureText(keys.right).width) / 2, 250);
-    canvas.canvasContext.fillText(keys.fire, (canvas.width - canvas.canvasContext.measureText(keys.fire).width) / 2, 300);
-    canvas.canvasContext.fillText(keys.bomb, (canvas.width - canvas.canvasContext.measureText(keys.bomb).width) / 2, 350);
-    canvas.canvasContext.fillText(keys.mine, (canvas.width - canvas.canvasContext.measureText(keys.mine).width) / 2, 400);
+
+    for (var key in keys) {
+        canvas.canvasContext.fillText(keys[key], (canvas.width - canvas.canvasContext.measureText(keys[key]).width) / 2, 100 + 50 * count);
+        count++;
+    }
 }
 
 function credits() {
@@ -834,8 +844,8 @@ function credits() {
     canvas.canvasContext.font = 'bold 35px Arial';
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText(names[0], (canvas.width - canvas.canvasContext.measureText(names[0]).width) / 2, canvas.height / 2 - 200);
-    canvas.canvasContext.fillText(names[1], (canvas.width - canvas.canvasContext.measureText(names[1]).width) / 2, canvas.height / 2 - 120);
-    canvas.canvasContext.fillText(names[2], (canvas.width - canvas.canvasContext.measureText(names[2]).width) / 2, canvas.height / 2 - 60);
-    canvas.canvasContext.fillText(names[3], (canvas.width - canvas.canvasContext.measureText(names[3]).width) / 2, canvas.height / 2 + 0);
-    canvas.canvasContext.fillText(names[4], (canvas.width - canvas.canvasContext.measureText(names[4]).width) / 2, canvas.height / 2 + 60);
+
+    for (var i = 1; i < names.length; i++) {
+        canvas.canvasContext.fillText(names[i], (canvas.width - canvas.canvasContext.measureText(names[i]).width) / 2, canvas.height / 2 - 180 + i * 60);
+    }
 }
