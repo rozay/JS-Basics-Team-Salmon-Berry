@@ -117,7 +117,7 @@ var Menu =
 {
     active: true,
     buttons: [new Button('play', 50), new Button('credits', 227), new Button('exit', 394)],
-    gameOverButtons: [new gameOverButton('playAgain', canvas.width / 2 - 200), new gameOverButton('menu', canvas.width / 2)],
+    gameOverButtons: [new gameOverButton('playAgain', canvas.width / 2 - 180), new gameOverButton('menu', canvas.width / 2 + 10)],
     draw : function()
     {
         for(var i in this.buttons)
@@ -197,7 +197,6 @@ var player = {
 
 function init(e) {
     loadResources();
-    //startGame();
     canvas.canvasElement.width = canvas.width;
     canvas.canvasElement.height = canvas.height;
     canvas.canvasContext = canvas.canvasElement.getContext('2d');
@@ -283,8 +282,8 @@ function loadResources()
     menuScreenImages['play'] = [createImage('resources/Menu/Play.png'), createImage('resources/Menu/Play-hover.png')];
     menuScreenImages['credits'] = [createImage('resources/Menu/Credits.png'), createImage('resources/Menu/Credits-hover.png')];
     menuScreenImages['exit'] = [createImage('resources/Menu/Exit.png'), createImage('resources/Menu/Exit-hover.png')];
-    menuScreenImages['playAgain'] = [createImage('resources/Menu/again.png'), createImage('resources/Menu/Options.png')]; //add
-    menuScreenImages['menu'] = [createImage('resources/Menu/Options.png'), createImage('resources/Menu/again.png')]; //add
+    menuScreenImages['playAgain'] = [createImage('resources/Menu/Again.png'), createImage('resources/Menu/Again-hover.png')]; //add
+    menuScreenImages['menu'] = [createImage('resources/Menu/Menu.png'), createImage('resources/Menu/Menu-hover.png')]; //add
     
     bulletImages.push(createImage('resources/bullet.png'));
     bulletImages.push(createImage('resources/bullet-enemies.png'));  
@@ -574,10 +573,12 @@ function drawGUI() {
 }
 
 function gameOver() {
-    canvas.canvasContext.font = 'bold 20px Arial';
+    canvas.canvasContext.font = 'bold 50px Arial';
+    var gameOver = 'GAME OVER!';
     canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.fillText('GAME OVER!', canvas.width / 2 - 90, canvas.height / 2);
-    canvas.canvasContext.fillText('Your score: ' + player.score, canvas.width / 2 - 90, canvas.height / 2 + 50);
+    canvas.canvasContext.fillText(gameOver, (canvas.width - canvas.canvasContext.measureText(gameOver).width) / 2, canvas.height / 2 - 100);
+    var score = 'Your score: ' + player.score;
+    canvas.canvasContext.fillText(score, (canvas.width - canvas.canvasContext.measureText(score).width) / 2, canvas.height / 2 - 30);
 }
 
 function createImage(path)
@@ -614,8 +615,6 @@ function levelUp() {
     }
 }
 
-//********************************
-
 function addEnemies() {
     for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
         Game.enemies.push(new Enemy());
@@ -628,5 +627,5 @@ function gameOverButton(tag, posX) {
     this.width = 167;
     this.height = 105;
     this.positionX = posX;
-    this.positionY = canvas.height / 2 + 130;
+    this.positionY = canvas.height / 2 + 20;
 }
