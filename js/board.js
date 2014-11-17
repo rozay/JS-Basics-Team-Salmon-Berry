@@ -669,14 +669,14 @@ function keyDown(event) {
             bulletSound.play();
             if(player.doubleGuns === true){
                 Game.bullets.push(new Bullet('player', 10, player.speed, 
-                            0, player.positionX + player.width, player.positionY));
+                            0, player.positionX + player.width, player.positionY + 10));
                 Game.bullets.push(new Bullet('player', 10, player.speed,
                             0, player.positionX + player.width, player.positionY + player.height - 10));
             }
             else{
                 Game.bullets.push(new Bullet('player', 10, player.speed,
                             0, player.positionX + player.width, 
-                            player.positionY + player.health / 4));
+                            player.positionY + player.height / 2));
             }
         }
         if(event.keyCode == 77 && player.mines > 0)
