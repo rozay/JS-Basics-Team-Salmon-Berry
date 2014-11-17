@@ -38,7 +38,7 @@ var canvas = {
         else if(this.starsTwoX  <= -this.width)
             this.starsTwoX = this.width;
     }
-}
+};
 
 var Game = {
     level : 1,
@@ -163,7 +163,7 @@ var Game = {
             }
         }
     }
-}
+};
 
 var Menu =
 {
@@ -197,7 +197,7 @@ var Menu =
             }
         }
     }
-}
+};
 
 var player = {
     positionX : 0,
@@ -256,7 +256,7 @@ var player = {
         }
         this.outOfBoundsCheck()
     }
-}
+};
 
 function init(e) {
     loadResources(); 
@@ -279,7 +279,7 @@ function init(e) {
     
     MENU_BUTTONS_X = canvas.width / 2 - 83;
     GAME_OVER_BUTTONS_Y = canvas.height / 2 + 20;
-}
+};
 
 function mouseClick(event) {
     var temp = { 'positionX': event.clientX - canvas.canvasElement.offsetLeft, 'positionY': event.clientY - canvas.canvasElement.offsetTop, 'width': 1, 'height': 1 };
@@ -317,7 +317,7 @@ function mouseClick(event) {
             }
         }
     }
-}
+};
 
 function mouseOver(event)
 {
@@ -333,7 +333,7 @@ function mouseOver(event)
             }
         }
     } 
-}
+};
 
 function loadResources()
 {
@@ -373,7 +373,8 @@ function loadResources()
     bulletImages.push(createImage('resources/bullet-enemies.png'));  
     bonusImages.push(createImage('resources/bonuses/bullets.png'));
     bonusImages.push(createImage('resources/bonuses/repairBonus.png'));
-}
+
+};
 
 function startGame() {
 
@@ -388,12 +389,12 @@ function startGame() {
     player.positionX = 0;
     player.positionY = canvas.height / 2 - player.height / 2;
     addEnemies();   
-}
+};
 
 function gameLoop() {
     update();
     drawEverything();
-}
+};
 
 function update() {
     canvas.updateStars();
@@ -425,7 +426,7 @@ function update() {
         Game.handleCollisions();
         levelUp();
     }
-}
+};
 
 function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -458,7 +459,7 @@ function drawEverything() {
         gameOver();
         Menu.draw();
     }
-}
+};
 
 function Enemy()
 {
@@ -487,7 +488,7 @@ function Enemy()
             this.positionY = Math.round(Math.random() * (canvas.height - 50));
         }
     };
-}
+};
 
 function Mine(posX, posY)
 {
@@ -518,7 +519,7 @@ function Mine(posX, posY)
         if(this.currentFrame >= mineAnimation.length)
             this.currentFrame = 0;
     };
-}
+};
 
 function Bomb(posX, posY)
 {
@@ -558,7 +559,7 @@ function Bomb(posX, posY)
         else
             return false;
     };
-}
+};
 
 function Bullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY)
 {
@@ -585,7 +586,7 @@ function Bullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY)
     {
         canvas.canvasContext.drawImage(bulletImages[this.typeBullet], this.positionX, this.positionY);
     };
-}
+};
 
 function Bonus(posX, posY)
 {
@@ -613,7 +614,7 @@ function Bonus(posX, posY)
             return false;
         }
     };
-}
+};
 
 function Explosion(posX, posY)
 {
@@ -642,7 +643,7 @@ function Explosion(posX, posY)
         canvas.canvasContext.drawImage(explosionEffect[this.currentFrame],this.positionX,this.positionY);
     };
     
-}
+};
 
 function keyDown(event) {
     if(Game.gameState === GAME_STATES.Playing)
@@ -690,7 +691,7 @@ function keyDown(event) {
             player.bombs--;
         }
     }
-}
+};
 
 function keyUp(event) {
     if(Game.gameState === GAME_STATES.Playing)
@@ -715,7 +716,7 @@ function keyUp(event) {
             player.playerImage.src = 'resources/player/main.png';
         }
     }
-}
+};
 
 function checkLives() {
     player.positionX = undefined;
@@ -728,7 +729,7 @@ function checkLives() {
             Game.gameState = GAME_STATES.GameOver;
         }, 1000);            
     }
-}
+};
 
 function reset() {
     Game.bullets = [];
@@ -743,29 +744,31 @@ function reset() {
         player.mines = 1;
     }, 500);
     
-}
+};
 
 function drawGUI() {
-    canvas.canvasContext.font = 'bold 20px Arial';
+    canvas.canvasContext.font = 'normal 34px Roboto';
+    canvas.canvasContext.textBaseline = 'top';
     canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 30);
+    canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 10);
     canvas.canvasContext.fillText('Score:   ' + player.score, 10, 50);
     canvas.canvasContext.fillText('Bombs:   ' + player.bombs, 10, 70);
     canvas.canvasContext.fillText('Mines:   ' + player.mines, 10, 90);
     canvas.canvasContext.strokeStyle = '#fff';
     canvas.canvasContext.lineWidth = 3;
-    canvas.canvasContext.strokeRect(5,canvas.height - 45, 106, 36);
-    canvas.canvasContext.fillStyle = '#0f0';
-    canvas.canvasContext.fillRect(8,canvas.height - 42, player.health, 30);
-}
+    canvas.canvasContext.strokeRect(canvas.width - 130,5, 106, 36);
+    canvas.canvasContext.fillStyle = '#00cee9';
+    canvas.canvasContext.fillRect(canvas.width-player.health - 27,8, player.health, 30);
+};
 
 function gameOver() {
-    canvas.canvasContext.font = 'bold 50px Arial';
+    canvas.canvasContext.font = 'normal 50px Roboto';
     var gameOver = 'GAME OVER!';
     canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.fillText(gameOver, (canvas.width - canvas.canvasContext.measureText(gameOver).width) / 2, canvas.height / 2 - 100);
+    canvas.canvasContext.fillText(gameOver, (canvas.width - canvas.canvasContext.measureText(gameOver).width) / 2, canvas.height / 2 - 200);
     var score = 'Your score: ' + player.score;
-    canvas.canvasContext.fillText(score, (canvas.width - canvas.canvasContext.measureText(score).width) / 2, canvas.height / 2 - 30);
+    canvas.canvasContext.textBaseline = 'top';
+    canvas.canvasContext.fillText(score, (canvas.width - canvas.canvasContext.measureText(score).width) / 2, canvas.height / 2 - 100);
 }
 
 function createImage(path)
@@ -821,9 +824,7 @@ function instructions() {
         mine: 'Drop Mine:   M'
     }
 
-    var count = 0;
-
-    canvas.canvasContext.font = 'bold 20px Arial';
+    canvas.canvasContext.font = 'normal 24px Roboto';
     canvas.canvasContext.fillStyle = '#fff';
 
     for (var key in keys) {
@@ -841,7 +842,7 @@ function credits() {
         'Nikola Nikolov'
     ]
 
-    canvas.canvasContext.font = 'bold 35px Arial';
+    canvas.canvasContext.font = 'normal 35px Roboto';
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText(names[0], (canvas.width - canvas.canvasContext.measureText(names[0]).width) / 2, canvas.height / 2 - 200);
 
