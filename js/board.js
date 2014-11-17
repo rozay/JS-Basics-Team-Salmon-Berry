@@ -13,7 +13,8 @@ var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
 var explosionSound = new Audio("resources/sounds/explosion.mp3");
 var bonus = new Audio("resources/sounds/bonus.mp3");
 
-var GAME_STATES = {'Menu' : 0, 'Playing' : 1, 'GameOver' : 2};
+var GAME_STATES = { 'Menu': 0, 'Playing': 1, 'GameOver': 2 };
+var MENU_SUBSTATES = { 'None': 0, 'Instructions': 1, 'Credits': 2 };
 var MENU_BUTTONS_WIDTH = 167;
 var MENU_BUTTONS_HEIGHT = 105;
 
@@ -42,7 +43,8 @@ var canvas = {
 var Game = {
     level : 1,
     enemiesPerLevel: 20,
-    gameState : GAME_STATES.Menu,
+    gameState: GAME_STATES.Menu,
+    menuSubState: MENU_SUBSTATES.None,
     enemies : [],
     bullets : [],
     bonuses : [],
@@ -163,27 +165,35 @@ var Game = {
     }
 }
 
-var Menu = 
+var Menu =
 {
-    buttons: [new Button('play', canvas.width / 2 - 83, 50), new Button('credits', canvas.width / 2 - 83, 227), 
-    new Button('exit', canvas.width / 2 - 83, 394), 
+    buttons: [
+    new Button('play', (canvas.width - MENU_BUTTONS_WIDTH) / 2, 50),
+    new Button('instructions', (canvas.width - MENU_BUTTONS_WIDTH) / 2, 227),
+    new Button('credits', (canvas.width - MENU_BUTTONS_WIDTH) / 2, 394),
+    new Button('backToMenu', (canvas.width - MENU_BUTTONS_WIDTH) / 2, canvas.height - MENU_BUTTONS_HEIGHT - 50),
     new Button('playAgain', canvas.width / 2 - 180, canvas.height / 2 + 20),
     new Button('menu', canvas.width / 2 + 10, canvas.height / 2 + 20)],
-    draw : function()
-    {
-        for(var i in this.buttons)
-        {
-            if(Game.gameState === GAME_STATES.Menu && (this.buttons[i].name === 'play' || this.buttons[i].name === 'credits' || this.buttons[i].name === 'exit'))
-            {
-            canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
+    draw: function () {
+        for (var i in this.buttons) {
+            if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.None && (this.buttons[i].name === 'play' || this.buttons[i].name === 'instructions' || this.buttons[i].name === 'credits')) {
+                canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                           this.buttons[i].positionX, this.buttons[i].positionY,
                                           this.buttons[i].width, this.buttons[i].height);
-            }
-            else if(Game.gameState === GAME_STATES.GameOver && (this.buttons[i].name === 'playAgain' || this.buttons[i].name === 'menu'))
-            {
-            canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
+            } else if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.Instructions && this.buttons[i].name === 'backToMenu') {
+                instructions();
+                canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                           this.buttons[i].positionX, this.buttons[i].positionY,
                                           this.buttons[i].width, this.buttons[i].height);
+            } else if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.Credits && this.buttons[i].name === 'backToMenu') {
+                credits();
+                canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
+                                          this.buttons[i].positionX, this.buttons[i].positionY,
+                                          this.buttons[i].width, this.buttons[i].height);
+            } else if (Game.gameState === GAME_STATES.GameOver && (this.buttons[i].name === 'playAgain' || this.buttons[i].name === 'menu')) {
+                canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
+                                              this.buttons[i].positionX, this.buttons[i].positionY,
+                                              this.buttons[i].width, this.buttons[i].height);
             }
         }
     }
@@ -269,47 +279,42 @@ function init(e) {
     GAME_OVER_BUTTONS_Y = canvas.height / 2 + 20;
 }
 
-function mouseClick(event)
-{
+function mouseClick(event) {
     var temp = { 'positionX': event.clientX - canvas.canvasElement.offsetLeft, 'positionY': event.clientY - canvas.canvasElement.offsetTop, 'width': 1, 'height': 1 };
 
-    if (Game.gameState === GAME_STATES.Menu) 
-    {
-        for (var i in Menu.buttons) 
-        {
-            if (areColliding(temp, Menu.buttons[i]))
-            {
-                if(Menu.buttons[i].name === 'play') 
-                {
+    if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.None) {
+        for (var i in Menu.buttons) {
+            if (areColliding(temp, Menu.buttons[i])) {
+                if (Menu.buttons[i].name === 'play') {
                     Game.gameState = GAME_STATES.Playing;
                     startGame();
+                } else if (Menu.buttons[i].name === 'instructions') {
+                    Game.menuSubState = MENU_SUBSTATES.Instructions;
+                } else if (Menu.buttons[i].name === 'credits') {
+                    Game.menuSubState = MENU_SUBSTATES.Credits;
                 }
-                else if (Menu.buttons[i].name === 'exit')
-                {
-                    close();
-                }
-            } 
+            }
         }
-    } 
-    else if (Game.gameState === GAME_STATES.GameOver) 
-    {
-        for (var i in Menu.buttons) 
-        {
-            if (areColliding(temp, Menu.buttons[i]))
-            {
-                if(Menu.buttons[i].name === 'playAgain') 
-                {
+    } else if (Game.gameState === GAME_STATES.Menu && (Game.menuSubState === MENU_SUBSTATES.Instructions || Game.menuSubState === MENU_SUBSTATES.Credits)) {
+        for (var i in Menu.buttons) {
+            if (areColliding(temp, Menu.buttons[i]) && Menu.buttons[i].name === 'backToMenu') {
+                Game.menuSubState = MENU_SUBSTATES.None;
+            }
+        }
+    } else if (Game.gameState === GAME_STATES.GameOver) {
+        for (var i in Menu.buttons) {
+            if (areColliding(temp, Menu.buttons[i])) {
+                if (Menu.buttons[i].name === 'playAgain') {
                     Game.gameState = GAME_STATES.Playing;
                     startGame();
                 }
-            
-                else if (Menu.buttons[i].name === 'menu')
-                {            
+
+                else if (Menu.buttons[i].name === 'menu') {
                     Game.gameState = GAME_STATES.Menu;
-                } 
-            }  
-        }               
-    }   
+                }
+            }
+        }
+    }
 }
 
 function mouseOver(event)
@@ -356,10 +361,11 @@ function loadResources()
     }
     
     menuScreenImages['play'] = [createImage('resources/Menu/Play.png'), createImage('resources/Menu/Play-hover.png')];
+    menuScreenImages['instructions'] = [createImage('resources/Menu/instructions.png'), createImage('resources/Menu/instructions-hover.png')];
     menuScreenImages['credits'] = [createImage('resources/Menu/Credits.png'), createImage('resources/Menu/Credits-hover.png')];
-    menuScreenImages['exit'] = [createImage('resources/Menu/Exit.png'), createImage('resources/Menu/Exit-hover.png')];
-    menuScreenImages['playAgain'] = [createImage('resources/Menu/Again.png'), createImage('resources/Menu/Again-hover.png')]; //add
-    menuScreenImages['menu'] = [createImage('resources/Menu/Menu.png'), createImage('resources/Menu/Menu-hover.png')]; //add
+    menuScreenImages['backToMenu'] = [createImage('resources/Menu/Menu.png'), createImage('resources/Menu/Menu-hover.png')];
+    menuScreenImages['playAgain'] = [createImage('resources/Menu/Again.png'), createImage('resources/Menu/Again-hover.png')];
+    menuScreenImages['menu'] = [createImage('resources/Menu/Menu.png'), createImage('resources/Menu/Menu-hover.png')];
     
     bulletImages.push(createImage('resources/bullet.png'));
     bulletImages.push(createImage('resources/bullet-enemies.png'));  
@@ -379,8 +385,7 @@ function startGame() {
 
     player.positionX = 0;
     player.positionY = canvas.height / 2 - player.height / 2;
-    addEnemies();
-    
+    addEnemies();   
 }
 
 function gameLoop() {
@@ -717,6 +722,9 @@ function checkLives() {
 
 function reset() {
     Game.bullets = [];
+    Game.bonuses = [];
+    Game.mines = [];
+    Game.bombs = [];
     setTimeout(function () {
         player.positionX = 0;
         player.positionY = canvas.height / 2 - player.height / 2;
@@ -784,4 +792,44 @@ function addEnemies() {
     for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
         Game.enemies.push(new Enemy());
     }
+}
+
+function instructions() {
+    var keys = {
+        up: 'Move Up: UP arrow',
+        down: 'Move Down: Down arrow',
+        left: 'Move Left: LEFT arrow',
+        right: 'Move Right: RIGHT arrow',
+        fire: 'Fire: X',
+        bomb: 'Drop Bomb: B',
+        mine: 'Drop Mine: M'
+    }
+
+    canvas.canvasContext.font = 'bold 20px Arial';
+    canvas.canvasContext.fillStyle = '#fff';
+    canvas.canvasContext.fillText(keys.up, (canvas.width - canvas.canvasContext.measureText(keys.up).width) / 2, 100);
+    canvas.canvasContext.fillText(keys.down, (canvas.width - canvas.canvasContext.measureText(keys.down).width) / 2, 150);
+    canvas.canvasContext.fillText(keys.left, (canvas.width - canvas.canvasContext.measureText(keys.left).width) / 2, 200);
+    canvas.canvasContext.fillText(keys.right, (canvas.width - canvas.canvasContext.measureText(keys.right).width) / 2, 250);
+    canvas.canvasContext.fillText(keys.fire, (canvas.width - canvas.canvasContext.measureText(keys.fire).width) / 2, 300);
+    canvas.canvasContext.fillText(keys.bomb, (canvas.width - canvas.canvasContext.measureText(keys.bomb).width) / 2, 350);
+    canvas.canvasContext.fillText(keys.mine, (canvas.width - canvas.canvasContext.measureText(keys.mine).width) / 2, 400);
+}
+
+function credits() {
+    var names = [
+        'TEAM "SALMON BERRY"',
+        'Rositsa Popova',
+        'Deivid Raychev',
+        'Georgi Barov',
+        'Nikola Nikolov'
+    ]
+
+    canvas.canvasContext.font = 'bold 35px Arial';
+    canvas.canvasContext.fillStyle = '#fff';
+    canvas.canvasContext.fillText(names[0], (canvas.width - canvas.canvasContext.measureText(names[0]).width) / 2, canvas.height / 2 - 200);
+    canvas.canvasContext.fillText(names[1], (canvas.width - canvas.canvasContext.measureText(names[1]).width) / 2, canvas.height / 2 - 120);
+    canvas.canvasContext.fillText(names[2], (canvas.width - canvas.canvasContext.measureText(names[2]).width) / 2, canvas.height / 2 - 60);
+    canvas.canvasContext.fillText(names[3], (canvas.width - canvas.canvasContext.measureText(names[3]).width) / 2, canvas.height / 2 + 0);
+    canvas.canvasContext.fillText(names[4], (canvas.width - canvas.canvasContext.measureText(names[4]).width) / 2, canvas.height / 2 + 60);
 }
