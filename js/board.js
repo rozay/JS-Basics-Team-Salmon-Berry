@@ -747,18 +747,18 @@ function reset() {
 };
 
 function drawGUI() {
-    canvas.canvasContext.font = 'normal 34px Roboto';
+    canvas.canvasContext.font = 'normal 30px Roboto';
     canvas.canvasContext.textBaseline = 'top';
     canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 10);
-    canvas.canvasContext.fillText('Score:   ' + player.score, 200, 10);
-    canvas.canvasContext.fillText('Bombs:   ' + player.bombs, 450, 10);
-    canvas.canvasContext.fillText('Mines:   ' + player.mines, 700, 10);
+    canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 5);
+    canvas.canvasContext.fillText('Score:   ' + player.score, 200, 5);
+    canvas.canvasContext.fillText('Bombs:   ' + player.bombs, 450, 5);
+    canvas.canvasContext.fillText('Mines:   ' + player.mines, 700, 5);
     canvas.canvasContext.strokeStyle = '#fff';
     canvas.canvasContext.lineWidth = 3;
-    canvas.canvasContext.strokeRect(canvas.width - 130,10, 106, 36);
+    canvas.canvasContext.strokeRect(canvas.width - 130,10, 106, 26);
     canvas.canvasContext.fillStyle = '#00cee9';
-    canvas.canvasContext.fillRect(canvas.width-player.health - 27,13, player.health, 30);
+    canvas.canvasContext.fillRect(canvas.width-player.health - 27,13, player.health, 20);
 };
 
 function gameOver() {
