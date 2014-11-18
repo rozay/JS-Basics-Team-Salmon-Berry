@@ -748,6 +748,7 @@ function reset() {
         player.health = 100;
         player.bombs = 1;
         player.mines = 1;
+        player.doubleGuns = false;
     }, 500);
     
 };
