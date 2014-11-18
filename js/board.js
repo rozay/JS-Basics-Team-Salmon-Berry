@@ -751,14 +751,14 @@ function drawGUI() {
     canvas.canvasContext.textBaseline = 'top';
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 10);
-    canvas.canvasContext.fillText('Score:   ' + player.score, 10, 50);
-    canvas.canvasContext.fillText('Bombs:   ' + player.bombs, 10, 70);
-    canvas.canvasContext.fillText('Mines:   ' + player.mines, 10, 90);
+    canvas.canvasContext.fillText('Score:   ' + player.score, 200, 10);
+    canvas.canvasContext.fillText('Bombs:   ' + player.bombs, 450, 10);
+    canvas.canvasContext.fillText('Mines:   ' + player.mines, 700, 10);
     canvas.canvasContext.strokeStyle = '#fff';
     canvas.canvasContext.lineWidth = 3;
-    canvas.canvasContext.strokeRect(canvas.width - 130,5, 106, 36);
+    canvas.canvasContext.strokeRect(canvas.width - 130,10, 106, 36);
     canvas.canvasContext.fillStyle = '#00cee9';
-    canvas.canvasContext.fillRect(canvas.width-player.health - 27,8, player.health, 30);
+    canvas.canvasContext.fillRect(canvas.width-player.health - 27,13, player.health, 30);
 };
 
 function gameOver() {
