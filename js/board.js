@@ -298,7 +298,8 @@ function init(e) {
     bgMusic.play();
     bgMusic.volume = 0.2;
     bgMusic.loop = true;
-    setInterval(gameLoop, 1000 / 60);
+    
+    gameLoop();
     
     MENU_BUTTONS_X = canvas.width / 2 - 83;
     GAME_OVER_BUTTONS_Y = canvas.height / 2 + 20;
@@ -417,6 +418,7 @@ function startGame() {
 function gameLoop() {
     update();
     drawEverything();
+    window.requestAnimationFrame(gameLoop);
 };
 
 function update() {
@@ -752,7 +754,7 @@ function checkLives() {
 };
 
 function reset() {
-    player.movingLeft = player.movingDown = player.movingRight = player.movingUp = false;
+    player.movingLeft = player.movingDown = player.movingRight = player.movingUp = player.fire = false;
     Game.bullets = [];
     Game.bonuses = [];
     Game.mines = [];
@@ -838,6 +840,7 @@ function addEnemies() {
     for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
         Game.enemies.push(new Enemy());
     }
+    createQuad();
 }
 
 function createSound(path)
@@ -845,6 +848,28 @@ function createSound(path)
     var temp = new Audio(path);
     temp.play();
     return temp;
+}
+
+function createQuad()
+{
+    for(var i = 0; i < 4;i++)
+    {
+        var temp = new Enemy();
+        temp.positionX = canvas.width - temp.width - i * (temp.width);
+        temp.positionY = 40 + i * temp.height;
+        temp.speed = 3;
+        Game.enemies.push(temp);
+    }
+    var tempp = 4;
+    for(var i = 4; i > 0;i--)
+    {
+        var temp = new Enemy();
+        temp.positionX = canvas.width - temp.width - i * (temp.width);
+        temp.positionY = 100 + tempp * temp.height;
+        temp.speed = 3;
+        Game.enemies.push(temp);
+        tempp++;
+    }
 }
 
 function instructions() {
@@ -886,3 +911,4 @@ function credits() {
         canvas.canvasContext.fillText(names[i], (canvas.width - canvas.canvasContext.measureText(names[i]).width) / 2, canvas.height / 2 - 180 + i * 60);
     }
 }
+
