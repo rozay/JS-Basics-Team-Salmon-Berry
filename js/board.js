@@ -824,6 +824,8 @@ function instructions() {
         mine: 'Drop Mine:   M'
     }
 
+    var count = 0;
+
     canvas.canvasContext.font = 'normal 24px Roboto';
     canvas.canvasContext.fillStyle = '#fff';
 
