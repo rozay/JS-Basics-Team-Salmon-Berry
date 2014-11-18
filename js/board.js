@@ -123,7 +123,7 @@ var Game = {
                 {
                     Game.bullets.push(new Bullet('enemy', this.enemies[i].hitPoint, -3,
                             1, this.enemies[i].positionX, 
-                            this.enemies[i].positionY + this.enemies[i].height / 4));
+                            this.enemies[i].positionY + this.enemies[i].height / 2 - 4));
                 }
             }
         }
@@ -670,13 +670,13 @@ function keyDown(event) {
             bulletSound.play();
             if(player.doubleGuns === true){
                 Game.bullets.push(new Bullet('player', 10, player.speed, 
-                            0, player.positionX + player.width, player.positionY + 10));
+                            0, player.positionX + player.width - 15, player.positionY + 10));
                 Game.bullets.push(new Bullet('player', 10, player.speed,
-                            0, player.positionX + player.width, player.positionY + player.height - 10));
+                            0, player.positionX + player.width - 15, player.positionY + player.height - 10));
             }
             else{
                 Game.bullets.push(new Bullet('player', 10, player.speed,
-                            0, player.positionX + player.width, 
+                            0, player.positionX + player.width - 15, 
                             player.positionY + player.height / 2));
             }
         }
