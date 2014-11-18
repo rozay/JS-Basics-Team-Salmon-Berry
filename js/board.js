@@ -534,9 +534,6 @@ function Mine(posX, posY)
     this.draw = function()
     {
         canvas.canvasContext.drawImage(mineAnimation[this.currentFrame], this.positionX, this.positionY);
-        canvas.canvasContext.strokeStyle = "#fff";
-        canvas.canvasContext.lineWidth = 3;
-        canvas.canvasContext.strokeRect(this.positionX - this.rangeWidth / 2, this.positionY - this.rangeHeight / 2, this.rangeWidth,this.rangeHeight);
     };
     this.update = function()
     {
@@ -566,9 +563,6 @@ function Bomb(posX, posY)
     this.draw = function()
     {
         canvas.canvasContext.drawImage(bombAnimation[this.currentFrame], this.positionX, this.positionY);
-        canvas.canvasContext.strokeStyle = "#fff";
-        canvas.canvasContext.lineWidth = 3;
-        canvas.canvasContext.strokeRect(this.positionX - this.radiusWidth / 2, this.positionY - this.radiusHeight / 2, this.radiusWidth,this.radiusHeight);
     };
     this.update = function()
     {
@@ -840,7 +834,6 @@ function addEnemies() {
     for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
         Game.enemies.push(new Enemy());
     }
-    createQuad();
 }
 
 function createSound(path)
@@ -848,28 +841,6 @@ function createSound(path)
     var temp = new Audio(path);
     temp.play();
     return temp;
-}
-
-function createQuad()
-{
-    for(var i = 0; i < 4;i++)
-    {
-        var temp = new Enemy();
-        temp.positionX = canvas.width - temp.width - i * (temp.width);
-        temp.positionY = 40 + i * temp.height;
-        temp.speed = 3;
-        Game.enemies.push(temp);
-    }
-    var tempp = 4;
-    for(var i = 4; i > 0;i--)
-    {
-        var temp = new Enemy();
-        temp.positionX = canvas.width - temp.width - i * (temp.width);
-        temp.positionY = 100 + tempp * temp.height;
-        temp.speed = 3;
-        Game.enemies.push(temp);
-        tempp++;
-    }
 }
 
 function instructions() {
