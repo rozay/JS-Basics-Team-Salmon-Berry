@@ -264,14 +264,14 @@ var player = {
             player.fireInterval = 3;
             bulletSound.play();
             if (player.doubleGuns === true) {
-                Game.bullets.push(new Bullet('player', 10, player.speed,
+                Game.bullets.push(new Bullet('player', 10, player.speed + 2,
                             0, player.positionX + player.width - 15, player.positionY + 10));
-                Game.bullets.push(new Bullet('player', 10, player.speed,
+                Game.bullets.push(new Bullet('player', 10, player.speed + 2,
                             0, player.positionX + player.width - 15, player.positionY + player.height - 10));
 
             }
             else {
-                Game.bullets.push(new Bullet('player', 10, player.speed,
+                Game.bullets.push(new Bullet('player', 10, player.speed + 2,
                             0, player.positionX + player.width - 15,
                             player.positionY + player.height / 2));
             }
