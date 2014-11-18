@@ -215,6 +215,7 @@ var player = {
     lives: 3,
     bombs: 1,
     mines: 1,
+    fireInterval: 3,
     doubleGuns : false,
     doubleGunsTime : 10,
     score: 0,
@@ -256,6 +257,8 @@ var player = {
             }
         }
         this.outOfBoundsCheck()
+        this.fireInterval = this.fireInterval - 0.3 > 0 ? this.fireInterval - 0.3 : 0;
+
     }
 };
 
@@ -667,16 +670,18 @@ function keyDown(event) {
             player.playerImage.src = 'resources/player/right.png';
         }
 
-        if(event.keyCode == 88)
+        if (event.keyCode == 88 && player.fireInterval === 0)
         {
+            player.fireInterval = 3;
             bulletSound.play();
             if(player.doubleGuns === true){
                 Game.bullets.push(new Bullet('player', 10, player.speed, 
                             0, player.positionX + player.width - 15, player.positionY + 10));
                 Game.bullets.push(new Bullet('player', 10, player.speed,
                             0, player.positionX + player.width - 15, player.positionY + player.height - 10));
+                
             }
-            else{
+            else {
                 Game.bullets.push(new Bullet('player', 10, player.speed,
                             0, player.positionX + player.width - 15, 
                             player.positionY + player.height / 2));
@@ -751,15 +756,16 @@ function reset() {
 function drawGUI() {
     canvas.canvasContext.font = 'normal 28px Roboto';
     canvas.canvasContext.textBaseline = 'top';
+
     canvas.canvasContext.fillStyle = '#00171a';
     canvas.canvasContext.fillRect(0, 0, canvas.width, STATUSBAR_HEIGHT);
-
 
     canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 0);
     canvas.canvasContext.fillText('Score:   ' + player.score, 200, 0);
     canvas.canvasContext.fillText('Bombs:   ' + player.bombs, 450, 0);
     canvas.canvasContext.fillText('Mines:   ' + player.mines, 700, 0);
+
     canvas.canvasContext.strokeStyle = '#fff';
     canvas.canvasContext.lineWidth = 3;
     canvas.canvasContext.strokeRect(canvas.width - 130,5, 106, 22);
@@ -770,10 +776,10 @@ function drawGUI() {
 function gameOver() {
     canvas.canvasContext.font = 'normal 50px Roboto';
     var gameOver = 'GAME OVER!';
-    canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.fillText(gameOver, (canvas.width - canvas.canvasContext.measureText(gameOver).width) / 2, canvas.height / 2 - 200);
     var score = 'Your score: ' + player.score;
+    canvas.canvasContext.fillStyle = '#fff';
     canvas.canvasContext.textBaseline = 'top';
+    canvas.canvasContext.fillText(gameOver, (canvas.width - canvas.canvasContext.measureText(gameOver).width) / 2, canvas.height / 2 - 200);     
     canvas.canvasContext.fillText(score, (canvas.width - canvas.canvasContext.measureText(score).width) / 2, canvas.height / 2 - 100);
 }
 
