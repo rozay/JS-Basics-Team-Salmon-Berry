@@ -17,6 +17,7 @@ var GAME_STATES = { 'Menu': 0, 'Playing': 1, 'GameOver': 2 };
 var MENU_SUBSTATES = { 'None': 0, 'Instructions': 1, 'Credits': 2 };
 var MENU_BUTTONS_WIDTH = 167;
 var MENU_BUTTONS_HEIGHT = 105;
+var STATUSBAR_HEIGHT = 34;
 
 var GAME_OVER_BUTTONS_Y;
 
@@ -227,10 +228,10 @@ var player = {
             this.positionX = 0;
         else if (this.positionX > canvas.width - this.width)
             this.positionX = canvas.width - this.width;
-        if (this.positionY < 0 - this.height)
+        if (this.positionY < STATUSBAR_HEIGHT - this.height)
             this.positionY = canvas.height - this.height;
         else if (this.positionY > canvas.height)       
-            this.positionY = 0;
+            this.positionY = STATUSBAR_HEIGHT;
     },
     update : function() {
         if(this.movingLeft === true) {
@@ -438,7 +439,7 @@ function drawEverything() {
     {
         Menu.draw();
     } else if (Game.gameState === GAME_STATES.Playing) {
-        drawGUI();
+        
         for (var i = 0; i < Game.enemies.length; i++) {
             Game.enemies[i].draw();
         }
@@ -454,7 +455,8 @@ function drawEverything() {
             Game.mines[i].draw();
         for (var i = 0; i < Game.bombs.length; i++)
             Game.bombs[i].draw();
-        player.draw();        
+        player.draw();
+        drawGUI();
     } else if (Game.gameState === GAME_STATES.GameOver) {
         gameOver();
         Menu.draw();
@@ -467,7 +469,7 @@ function Enemy()
     this.width = 50;
     this.height = 50;
     this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
-    this.positionY = Math.round(Math.random() * (canvas.height - 50));
+    this.positionY = Math.round(Math.random() * (canvas.height - 50 - STATUSBAR_HEIGHT)) + STATUSBAR_HEIGHT;
     this.speed = Math.random() + Game.level / 3;
     this.typeEnemy = Math.round(Math.random() * 3);
     this.chanceForBonus = Math.round(Math.random() * 80);
@@ -485,7 +487,7 @@ function Enemy()
     {
         if (this.positionX < 0 - this.width) {
             this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
-            this.positionY = Math.round(Math.random() * (canvas.height - 50));
+            this.positionY = Math.round(Math.random() * (canvas.height - 50 - STATUSBAR_HEIGHT)) + STATUSBAR_HEIGHT;
         }
     };
 };
@@ -750,7 +752,7 @@ function drawGUI() {
     canvas.canvasContext.font = 'normal 28px Roboto';
     canvas.canvasContext.textBaseline = 'top';
     canvas.canvasContext.fillStyle = '#00171a';
-    canvas.canvasContext.fillRect(0, 0, canvas.width, 34);
+    canvas.canvasContext.fillRect(0, 0, canvas.width, STATUSBAR_HEIGHT);
 
 
     canvas.canvasContext.fillStyle = '#fff';
@@ -762,9 +764,7 @@ function drawGUI() {
     canvas.canvasContext.lineWidth = 3;
     canvas.canvasContext.strokeRect(canvas.width - 130,5, 106, 22);
     canvas.canvasContext.fillStyle = '#00cee9';
-    canvas.canvasContext.fillRect(canvas.width - player.health - 27, 8, player.health, 16);
-    
-
+    canvas.canvasContext.fillRect(canvas.width - player.health - 27, 8, player.health >= 0 ? player.health : 0, 16);
 };
 
 function gameOver() {
