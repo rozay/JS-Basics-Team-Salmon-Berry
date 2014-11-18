@@ -257,8 +257,7 @@ var player = {
             }
         }
         this.outOfBoundsCheck()
-        this.fireInterval = this.fireInterval - 0.3 > 0 ? this.fireInterval - 0.3 : 0;
-
+        this.fireInterval = this.fireInterval > 0 ? this.fireInterval - 0.3 : 0;
     }
 };
 
