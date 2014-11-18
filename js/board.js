@@ -9,8 +9,8 @@ var bombAnimation = [];
 
 var menuScreenImages = [];
 var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
-var bulletSound = new Audio("resources/sounds/PlayerBullet.mp3");
-var explosionSound = new Audio("resources/sounds/explosion.mp3");
+var bulletSound = "resources/sounds/PlayerBullet.mp3";
+var explosionSound = "resources/sounds/explosion.mp3";
 var bonus = new Audio("resources/sounds/bonus.mp3");
 
 var GAME_STATES = { 'Menu': 0, 'Playing': 1, 'GameOver': 2 };
@@ -52,6 +52,7 @@ var Game = {
     mines : [],
     bombs : [],
     explosions : [],
+    audios : [],
     handleCollisions : function()
     {
         for(var i = 0; i < this.enemies.length;i++)
@@ -141,6 +142,7 @@ var Game = {
                 {
                     if(areColliding(temp, this.enemies[k]) === true)
                     {
+                        
                          this.explosions.push(new Explosion(this.enemies[k].positionX - 200, this.enemies[k].positionY - 200));
                         this.enemies.splice(k,1);    
                     }
@@ -262,7 +264,7 @@ var player = {
 
         if (player.fire === true && this.fireInterval === 0) {
             player.fireInterval = 3;
-            bulletSound.play();
+            Game.audios.push(createSound(bulletSound));
             if (player.doubleGuns === true) {
                 Game.bullets.push(new Bullet('player', 10, player.speed + 2,
                             0, player.positionX + player.width - 15, player.positionY + 10));
@@ -443,7 +445,11 @@ function update() {
             Game.mines[i].update();
         for (var i = 0; i < Game.bombs.length; i++)
             Game.bombs[i].update();
-        
+        for(var i = 0;i < Game.audios.length;i++)
+        {
+            if(Game.audios[i].ended === true)
+                Game.audios.splice(i,1);
+        }
         Game.handleCollisions();
         levelUp();
     }
@@ -640,7 +646,7 @@ function Bonus(posX, posY)
 
 function Explosion(posX, posY)
 {
-    explosionSound.play();
+    Game.audios.push(createSound(explosionSound));
     this.positionX = posX;
     this.positionY = posY;
     this.currentFrame = 0;
@@ -746,6 +752,7 @@ function checkLives() {
 };
 
 function reset() {
+    player.movingLeft = player.movingDown = player.movingRight = player.movingUp = false;
     Game.bullets = [];
     Game.bonuses = [];
     Game.mines = [];
@@ -831,6 +838,13 @@ function addEnemies() {
     for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
         Game.enemies.push(new Enemy());
     }
+}
+
+function createSound(path)
+{
+    var temp = new Audio(path);
+    temp.play();
+    return temp;
 }
 
 function instructions() {
