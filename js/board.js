@@ -216,6 +216,7 @@ var player = {
     bombs: 1,
     mines: 1,
     fireInterval: 3,
+    fire: false,
     doubleGuns : false,
     doubleGunsTime : 10,
     score: 0,
@@ -258,6 +259,23 @@ var player = {
         }
         this.outOfBoundsCheck()
         this.fireInterval = this.fireInterval > 0 ? this.fireInterval - 0.3 : 0;
+
+        if (player.fire === true && this.fireInterval === 0) {
+            player.fireInterval = 3;
+            bulletSound.play();
+            if (player.doubleGuns === true) {
+                Game.bullets.push(new Bullet('player', 10, player.speed,
+                            0, player.positionX + player.width - 15, player.positionY + 10));
+                Game.bullets.push(new Bullet('player', 10, player.speed,
+                            0, player.positionX + player.width - 15, player.positionY + player.height - 10));
+
+            }
+            else {
+                Game.bullets.push(new Bullet('player', 10, player.speed,
+                            0, player.positionX + player.width - 15,
+                            player.positionY + player.height / 2));
+            }
+        }
     }
 };
 
@@ -669,22 +687,9 @@ function keyDown(event) {
             player.playerImage.src = 'resources/player/right.png';
         }
 
-        if (event.keyCode == 88 && player.fireInterval === 0)
+        if (event.keyCode == 88)
         {
-            player.fireInterval = 3;
-            bulletSound.play();
-            if(player.doubleGuns === true){
-                Game.bullets.push(new Bullet('player', 10, player.speed, 
-                            0, player.positionX + player.width - 15, player.positionY + 10));
-                Game.bullets.push(new Bullet('player', 10, player.speed,
-                            0, player.positionX + player.width - 15, player.positionY + player.height - 10));
-                
-            }
-            else {
-                Game.bullets.push(new Bullet('player', 10, player.speed,
-                            0, player.positionX + player.width - 15, 
-                            player.positionY + player.height / 2));
-            }
+            player.fire = true;
         }
         if(event.keyCode == 77 && player.mines > 0)
         {
@@ -720,6 +725,9 @@ function keyUp(event) {
         else if (event.keyCode == 40){
             player.movingDown = false;
             player.playerImage.src = 'resources/player/main.png';
+        }
+        else if (event.keyCode == 88) {
+            player.fire = false;
         }
     }
 };
