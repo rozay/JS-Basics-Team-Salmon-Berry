@@ -45,7 +45,8 @@ var Game = {
     enemiesPerLevel: 20,
     gameState: GAME_STATES.Menu,
     menuSubState: MENU_SUBSTATES.None,
-    enemies : [],
+    enemies: [],
+    enemiesFormations: 0,
     bullets : [],
     bonuses : [],
     mines : [],
@@ -467,10 +468,15 @@ function update() {
     if (Game.gameState === GAME_STATES.Playing)
     {
         player.update();
-        for (var i = 0; i < Game.bullets.length; i++)
+        for (var i = 0; i < Game.bullets.length; i++) {
             Game.bullets[i].update();
-        for (var i = 0; i < Game.enemies.length; i++)
+        }
+        for (var i = 0; i < Game.enemies.length; i++) {
             Game.enemies[i].update();
+            if (Game.enemies[i].outOfBoundsCheck()) {
+                Game.enemies.splice(i, 1);
+            }
+        } 
         for (var i = 0; i < Game.bonuses.length; i++) {
             Game.bonuses[i].update();
             if (Game.bonuses[i].checkTime()) {
@@ -483,17 +489,18 @@ function update() {
                 Game.explosions.splice(i, 1);
             }
         }
-        for (var i = 0; i < Game.mines.length; i++)
+        for (var i = 0; i < Game.mines.length; i++) {
             Game.mines[i].update();
-        for (var i = 0; i < Game.bombs.length; i++)
+        }
+        for (var i = 0; i < Game.bombs.length; i++) {
             Game.bombs[i].update();
-        for(var i = 0;i < Game.audios.length;i++)
-        {
+        }
+        for(var i = 0;i < Game.audios.length;i++) {
             if(Game.audios[i].ended === true)
                 Game.audios.splice(i,1);
         }
         Game.handleCollisions();
-        levelUp();
+        addEnemies();      
     }
 };
 
@@ -548,14 +555,13 @@ function Enemy()
     {
         this.positionX = this.positionX - this.speed;
         this.positionY = this.positionY; //+ Math.round(Math.random() * 2) - Math.round(Math.random() * 2); 
-        this.outOfBoundsCheck()
     };
     this.outOfBoundsCheck = function () 
     {
         if (this.positionX < 0 - this.width) {
-            this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
-            this.positionY = Math.round(Math.random() * (canvas.height - 50 - STATUSBAR_HEIGHT)) + STATUSBAR_HEIGHT;
+            return true;
         }
+        return false;
     };
 };
 
@@ -853,19 +859,21 @@ function Button(tag, posX, posY) {
 }
 
 function levelUp() {
-    if (Game.enemies.length === 0) {
+    if (Game.enemiesFormations === 3) {
         Game.level++;
         player.bombs++;
         player.mines++;
-        addEnemies();
+        Game.enemiesFormations = 0;
     }
 }
 
 function addEnemies() {
-    for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
-        Game.enemies.push(new Enemy());
+    if (Game.enemies.length == 0) {
+        Game.enemiesFormations++;
+        createStrokedRect(canvas.width + 100, 100, 20, 30, 4, 2);        
+        console.log(Game.enemiesFormations);
+        levelUp();       
     }
-    createStrokedRect(400,100,10,10,4,2);
 }
 
 function createSound(path)
@@ -877,33 +885,34 @@ function createSound(path)
 
 function createStrokedRect(posX,posY,spaceX, spaceY, enemiesNum, speed)
 {
-    for(var i = 0;i < enemiesNum;i++)
+    
+    for (var i = 0; i < enemiesNum; i++) // up row
     {
         var temp = new Enemy();
         temp.speed = speed;
-        temp.positionX = posX + (i * enemyImages[0].width);
+        temp.positionX = posX + (i * enemyImages[0].width) + i * spaceX;
         temp.positionY = posY;
         Game.enemies.push(temp);
     }
-    for(var i = 0;i < enemiesNum;i++)
+    for(var i = 0;i < enemiesNum;i++) // columns
     {
         var temp = new Enemy();
         temp.speed = speed;
         temp.positionX = posX;
-        temp.positionY = posY + i * enemyImages[0].height;
+        temp.positionY = posY + i * enemyImages[0].height + i * spaceY;
         Game.enemies.push(temp);
         temp = new Enemy();
         temp.speed = speed;
-        temp.positionX = posX +  enemiesNum * enemyImages[0].width;
-        temp.positionY = posY + i * enemyImages[0].height;
+        temp.positionX = posX + enemiesNum * enemyImages[0].width + enemiesNum * spaceX;
+        temp.positionY = posY + i * enemyImages[0].height + i * spaceY;
         Game.enemies.push(temp);
     }
-    for(var i = 0;i <= enemiesNum;i++)
+    for(var i = 0;i <= enemiesNum;i++) // bottom row
     {
         var temp = new Enemy();
         temp.speed = speed;
-        temp.positionX = posX + (i * enemyImages[0].width);
-        temp.positionY = posY + enemiesNum * enemyImages[0].height;
+        temp.positionX = posX + (i * enemyImages[0].width) + i * spaceX;
+        temp.positionY = posY + enemiesNum * enemyImages[0].height + enemiesNum * spaceY;
         Game.enemies.push(temp);
     }
 }
