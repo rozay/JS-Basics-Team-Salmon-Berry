@@ -11,7 +11,7 @@ var menuScreenImages = [];
 var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
 var bulletSound = "resources/sounds/PlayerBullet.mp3";
 var explosionSound = "resources/sounds/explosion.mp3";
-var bonus = new Audio("resources/sounds/bonus.mp3");
+var bonus = ("resources/sounds/bonus.mp3");
 
 var GAME_STATES = { 'Menu': 0, 'Playing': 1, 'GameOver': 2 };
 var MENU_SUBSTATES = { 'None': 0, 'Instructions': 1, 'Credits': 2 };
@@ -118,15 +118,6 @@ var Game = {
                  this.explosions.push(new Explosion(this.enemies[i].positionX - 200,this.enemies[i].positionY - 200));
                 this.enemies.splice(i,1);
                 checkLives();
-            }
-            else
-            {
-                if(Math.round(Math.random() * 100) === 99)
-                {
-                    Game.bullets.push(new Bullet('enemy', this.enemies[i].hitPoint, -3,
-                            1, this.enemies[i].positionX, 
-                            this.enemies[i].positionY + this.enemies[i].height / 2 - 4));
-                }
             }
         }
         
@@ -543,13 +534,25 @@ function Enemy() {
     this.speed = Math.random() + Game.level / 3;
     this.typeEnemy = Math.round(Math.random() * 3);
     this.chanceForBonus = Math.round(Math.random() * 80);
+    this.firePeriod = 3;
+    this.timeAfterFire = 0;
     this.draw = function () {
         canvas.canvasContext.drawImage(enemyImages[this.typeEnemy], this.positionX, this.positionY);
     };
     this.update = function () {
+        this.timeAfterFire--;
         this.positionX = this.positionX - this.speed;
         this.positionY = this.positionY;
         this.outOfBoundsCheck()
+        if(this.timeAfterFire <= 0){
+            this.timeAfterFire = this.firePeriod;
+            if(Math.round(Math.random() * 100) === 99)
+            {
+                Game.bullets.push(new Bullet('enemy', this.hitPoint, -3,
+                        1, this.positionX, 
+                        this.positionY + this.height / 2 - 4));
+            }
+        }
     };
     this.outOfBoundsCheck = function () {
         if (this.positionX < 0 - this.width) {
@@ -653,7 +656,7 @@ function Bullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY)
 
 function Bonus(posX, posY)
 {
-    bonus.play();
+    Game.audios.push(createSound(bonus));
     this.width  = 60;
     this.height = 40;
     this.positionX = posX;
