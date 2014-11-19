@@ -179,6 +179,10 @@ var Menu =
     new Button('menu', (canvas.width - 2 * MENU_BUTTONS_WIDTH - 50) / 2 + MENU_BUTTONS_WIDTH + 50, canvas.height / 2 + 20)],
     draw: function () {
 
+        if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.None) {
+            canvas.canvasContext.drawImage(menuScreenImages['logo'][0],(canvas.width - 534) / 2, 50, 534, 300);
+        }
+
         for (var i = 0; i < this.buttons.length; i++) {
             if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.None && (this.buttons[i].name === 'play' || this.buttons[i].name === 'instructions' || this.buttons[i].name === 'credits')) {
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
@@ -433,6 +437,7 @@ function loadResources()
     menuScreenImages['backToMenu'] = [createImage('resources/Menu/Menu.png'), createImage('resources/Menu/Menu-hover.png')];
     menuScreenImages['playAgain'] = [createImage('resources/Menu/Again.png'), createImage('resources/Menu/Again-hover.png')];
     menuScreenImages['menu'] = [createImage('resources/Menu/Menu.png'), createImage('resources/Menu/Menu-hover.png')];
+    menuScreenImages['logo'] = [createImage('resources/blue-force-logo/logo.png'), createImage('resources/blue-force-logo/logo.png')];
     
     bulletImages.push(createImage('resources/bullet.png'));
     bulletImages.push(createImage('resources/bullet-enemies.png'));  
