@@ -886,7 +886,7 @@ function createSound(path)
 function createStrokedRect(posX,posY,spaceX, spaceY, enemiesNum, speed)
 {
     
-    for (var i = 0; i < enemiesNum; i++) // up row
+    for (var i = 1; i < enemiesNum; i++) // up row
     {
         var temp = new Enemy();
         temp.speed = speed;
@@ -894,7 +894,7 @@ function createStrokedRect(posX,posY,spaceX, spaceY, enemiesNum, speed)
         temp.positionY = posY;
         Game.enemies.push(temp);
     }
-    for(var i = 0;i < enemiesNum;i++) // columns
+    for(var i = 0;i <= enemiesNum;i++) // columns
     {
         var temp = new Enemy();
         temp.speed = speed;
@@ -907,7 +907,7 @@ function createStrokedRect(posX,posY,spaceX, spaceY, enemiesNum, speed)
         temp.positionY = posY + i * enemyImages[0].height + i * spaceY;
         Game.enemies.push(temp);
     }
-    for(var i = 0;i <= enemiesNum;i++) // bottom row
+    for(var i = 1;i < enemiesNum;i++) // bottom row
     {
         var temp = new Enemy();
         temp.speed = speed;
@@ -915,4 +915,6 @@ function createStrokedRect(posX,posY,spaceX, spaceY, enemiesNum, speed)
         temp.positionY = posY + enemiesNum * enemyImages[0].height + enemiesNum * spaceY;
         Game.enemies.push(temp);
     }
+
+    console.log(Game.enemies.length);
 }
