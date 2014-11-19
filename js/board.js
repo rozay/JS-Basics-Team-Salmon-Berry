@@ -870,6 +870,8 @@ function addEnemies() {
 function createSound(path)
 {
     var temp = new Audio(path);
+    if(path.match('explosion'))
+        temp.volume = 0.15;
     temp.play();
     return temp;
 }
