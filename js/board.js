@@ -17,9 +17,8 @@ var GAME_STATES = { 'Menu': 0, 'Playing': 1, 'GameOver': 2 };
 var MENU_SUBSTATES = { 'None': 0, 'Instructions': 1, 'Credits': 2 };
 var MENU_BUTTONS_WIDTH = 167;
 var MENU_BUTTONS_HEIGHT = 105;
+var MENU_BUTTONS_Y = 350;
 var STATUSBAR_HEIGHT = 34;
-
-var GAME_OVER_BUTTONS_Y;
 
 var canvas = {
     canvasElement : document.getElementById('canvas'),
@@ -171,29 +170,73 @@ var Game = {
 var Menu =
 {
     buttons: [
-    new Button('play', (canvas.width - MENU_BUTTONS_WIDTH) / 2, 50),
-    new Button('instructions', (canvas.width - MENU_BUTTONS_WIDTH) / 2, 227),
-    new Button('credits', (canvas.width - MENU_BUTTONS_WIDTH) / 2, 394),
+    new Button('play', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2, MENU_BUTTONS_Y),
+    new Button('instructions', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2 + (MENU_BUTTONS_WIDTH + 75), MENU_BUTTONS_Y),
+    new Button('credits', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2 + 2 * (MENU_BUTTONS_WIDTH + 75), MENU_BUTTONS_Y),
     new Button('backToMenu', (canvas.width - MENU_BUTTONS_WIDTH) / 2, canvas.height - MENU_BUTTONS_HEIGHT - 50),
-    new Button('playAgain', canvas.width / 2 - 180, canvas.height / 2 + 20),
-    new Button('menu', canvas.width / 2 + 10, canvas.height / 2 + 20)],
+    new Button('playAgain', (canvas.width - 2 * MENU_BUTTONS_WIDTH - 50) / 2, canvas.height / 2 + 20),
+    new Button('menu', (canvas.width - 2 * MENU_BUTTONS_WIDTH - 50) / 2 + MENU_BUTTONS_WIDTH + 50, canvas.height / 2 + 20)],
     draw: function () {
-        for (var i in this.buttons) {
+
+        for (var i = 0; i < this.buttons.length; i++) {
             if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.None && (this.buttons[i].name === 'play' || this.buttons[i].name === 'instructions' || this.buttons[i].name === 'credits')) {
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                           this.buttons[i].positionX, this.buttons[i].positionY,
                                           this.buttons[i].width, this.buttons[i].height);
+
             } else if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.Instructions && this.buttons[i].name === 'backToMenu') {
-                instructions();
+                var count = 0;
+                var keys = {
+                    up: 'Move Up:   UP arrow',
+                    down: 'Move Down:   DOWN arrow',
+                    left: 'Move Left:   LEFT arrow',
+                    right: 'Move Right:   RIGHT arrow',
+                    fire: 'Fire:   X',
+                    bomb: 'Drop Bomb:   B',
+                    mine: 'Drop Mine:   M'
+                }
+
+                canvas.canvasContext.font = 'normal 24px Roboto';
+                canvas.canvasContext.fillStyle = '#fff';
+
+                for (var key in keys) {
+                    canvas.canvasContext.fillText(keys[key], (canvas.width - canvas.canvasContext.measureText(keys[key]).width) / 2, 75 + 50 * count);
+                    count++;
+                }
+
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                           this.buttons[i].positionX, this.buttons[i].positionY,
                                           this.buttons[i].width, this.buttons[i].height);
+
             } else if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.Credits && this.buttons[i].name === 'backToMenu') {
-                credits();
+                var names = [
+                    'TEAM "SALMON BERRY"',
+                    'Rositsa Popova',
+                    'Deivid Raychev',
+                    'Georgi Barov',
+                    'Nikola Nikolov'
+                ]
+
+                canvas.canvasContext.font = 'normal 35px Roboto';
+                canvas.canvasContext.fillStyle = '#fff';
+                canvas.canvasContext.fillText(names[0], (canvas.width - canvas.canvasContext.measureText(names[0]).width) / 2, canvas.height / 2 - 200);
+
+                for (var j = 1; j < names.length; j++) {
+                    canvas.canvasContext.fillText(names[j], (canvas.width - canvas.canvasContext.measureText(names[j]).width) / 2, canvas.height / 2 - 180 + j * 60);
+                }
+
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                           this.buttons[i].positionX, this.buttons[i].positionY,
                                           this.buttons[i].width, this.buttons[i].height);
+
             } else if (Game.gameState === GAME_STATES.GameOver && (this.buttons[i].name === 'playAgain' || this.buttons[i].name === 'menu')) {
+                var gameOver = 'GAME OVER!';
+                var score = 'Your score: ' + player.score;
+                canvas.canvasContext.font = 'normal 50px Roboto';
+                canvas.canvasContext.fillStyle = '#fff';
+                canvas.canvasContext.textBaseline = 'top';
+                canvas.canvasContext.fillText(gameOver, (canvas.width - canvas.canvasContext.measureText(gameOver).width) / 2, canvas.height / 2 - 200);
+                canvas.canvasContext.fillText(score, (canvas.width - canvas.canvasContext.measureText(score).width) / 2, canvas.height / 2 - 100);
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
                                               this.buttons[i].positionX, this.buttons[i].positionY,
                                               this.buttons[i].width, this.buttons[i].height);
@@ -300,9 +343,6 @@ function init(e) {
     bgMusic.loop = true;
     
     gameLoop();
-    
-    MENU_BUTTONS_X = canvas.width / 2 - 83;
-    GAME_OVER_BUTTONS_Y = canvas.height / 2 + 20;
 };
 
 function mouseClick(event) {
@@ -486,7 +526,6 @@ function drawEverything() {
         player.draw();
         drawGUI();
     } else if (Game.gameState === GAME_STATES.GameOver) {
-        gameOver();
         Menu.draw();
     }
 };
@@ -772,27 +811,19 @@ function drawGUI() {
     canvas.canvasContext.fillRect(0, 0, canvas.width, STATUSBAR_HEIGHT);
 
     canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.fillText('Lives:  ' + player.lives, 10, 0);
-    canvas.canvasContext.fillText('Score:   ' + player.score, 200, 0);
-    canvas.canvasContext.fillText('Bombs:   ' + player.bombs, 450, 0);
-    canvas.canvasContext.fillText('Mines:   ' + player.mines, 700, 0);
+
+    canvas.canvasContext.fillText('Level:  ' + Game.level, 10, 0);
+    canvas.canvasContext.fillText('Lives:  ' + player.lives, 170, 0);
+    canvas.canvasContext.fillText('Bombs:  ' + player.bombs, 330, 0);
+    canvas.canvasContext.fillText('Mines:  ' + player.mines, 510, 0);
+    canvas.canvasContext.fillText('Score:  ' + player.score, 680, 0);
 
     canvas.canvasContext.strokeStyle = '#fff';
     canvas.canvasContext.lineWidth = 3;
-    canvas.canvasContext.strokeRect(canvas.width - 130,5, 106, 22);
+    canvas.canvasContext.strokeRect(canvas.width - 130, 5, 106, 22);
     canvas.canvasContext.fillStyle = '#00cee9';
     canvas.canvasContext.fillRect(canvas.width - player.health - 27, 8, player.health >= 0 ? player.health : 0, 16);
 };
-
-function gameOver() {
-    canvas.canvasContext.font = 'normal 50px Roboto';
-    var gameOver = 'GAME OVER!';
-    var score = 'Your score: ' + player.score;
-    canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.textBaseline = 'top';
-    canvas.canvasContext.fillText(gameOver, (canvas.width - canvas.canvasContext.measureText(gameOver).width) / 2, canvas.height / 2 - 200);     
-    canvas.canvasContext.fillText(score, (canvas.width - canvas.canvasContext.measureText(score).width) / 2, canvas.height / 2 - 100);
-}
 
 function createImage(path)
 {
@@ -842,46 +873,6 @@ function createSound(path)
     var temp = new Audio(path);
     temp.play();
     return temp;
-}
-
-function instructions() {
-    var keys = {
-        up: 'Move Up:   UP arrow',
-        down: 'Move Down:   Down arrow',
-        left: 'Move Left:   LEFT arrow',
-        right: 'Move Right:   RIGHT arrow',
-        fire: 'Fire:   X',
-        bomb: 'Drop Bomb:   B',
-        mine: 'Drop Mine:   M'
-    }
-
-    var count = 0;
-
-    canvas.canvasContext.font = 'normal 24px Roboto';
-    canvas.canvasContext.fillStyle = '#fff';
-
-    for (var key in keys) {
-        canvas.canvasContext.fillText(keys[key], (canvas.width - canvas.canvasContext.measureText(keys[key]).width) / 2, 100 + 50 * count);
-        count++;
-    }
-}
-
-function credits() {
-    var names = [
-        'TEAM "SALMON BERRY"',
-        'Rositsa Popova',
-        'Deivid Raychev',
-        'Georgi Barov',
-        'Nikola Nikolov'
-    ]
-
-    canvas.canvasContext.font = 'normal 35px Roboto';
-    canvas.canvasContext.fillStyle = '#fff';
-    canvas.canvasContext.fillText(names[0], (canvas.width - canvas.canvasContext.measureText(names[0]).width) / 2, canvas.height / 2 - 200);
-
-    for (var i = 1; i < names.length; i++) {
-        canvas.canvasContext.fillText(names[i], (canvas.width - canvas.canvasContext.measureText(names[i]).width) / 2, canvas.height / 2 - 180 + i * 60);
-    }
 }
 
 function createStrokedRect(posX,posY,spaceX, spaceY, enemiesNum, speed)
