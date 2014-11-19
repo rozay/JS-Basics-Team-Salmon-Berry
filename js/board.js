@@ -834,6 +834,7 @@ function addEnemies() {
     for (var i = 0; i < Game.enemiesPerLevel * Game.level; i++) {
         Game.enemies.push(new Enemy());
     }
+    createStrokedRect(400,100,10,10,4,2);
 }
 
 function createSound(path)
@@ -883,3 +884,35 @@ function credits() {
     }
 }
 
+function createStrokedRect(posX,posY,spaceX, spaceY, enemiesNum, speed)
+{
+    for(var i = 0;i < enemiesNum;i++)
+    {
+        var temp = new Enemy();
+        temp.speed = speed;
+        temp.positionX = posX + (i * enemyImages[0].width);
+        temp.positionY = posY;
+        Game.enemies.push(temp);
+    }
+    for(var i = 0;i < enemiesNum;i++)
+    {
+        var temp = new Enemy();
+        temp.speed = speed;
+        temp.positionX = posX;
+        temp.positionY = posY + i * enemyImages[0].height;
+        Game.enemies.push(temp);
+        temp = new Enemy();
+        temp.speed = speed;
+        temp.positionX = posX +  enemiesNum * enemyImages[0].width;
+        temp.positionY = posY + i * enemyImages[0].height;
+        Game.enemies.push(temp);
+    }
+    for(var i = 0;i <= enemiesNum;i++)
+    {
+        var temp = new Enemy();
+        temp.speed = speed;
+        temp.positionX = posX + (i * enemyImages[0].width);
+        temp.positionY = posY + enemiesNum * enemyImages[0].height;
+        Game.enemies.push(temp);
+    }
+}
