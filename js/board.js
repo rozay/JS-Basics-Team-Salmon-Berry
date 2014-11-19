@@ -180,7 +180,7 @@ var Menu =
     draw: function () {
 
         if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.None) {
-            canvas.canvasContext.drawImage(menuScreenImages['logo'][0],(canvas.width - 534) / 2, 50, 534, 300);
+            canvas.canvasContext.drawImage(menuScreenImages['logo'][0],(canvas.width - 534) / 2, 0, 580, 350);
         }
 
         for (var i = 0; i < this.buttons.length; i++) {
