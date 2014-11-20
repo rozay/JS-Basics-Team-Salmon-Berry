@@ -113,8 +113,9 @@ var Game = {
         }
         for (i = 0; i < this.mines.length; i++)
             this.mines[i].update();
-        for (i = 0; i < this.bombs.length; i++)
+        for (i = 0; i < this.bombs.length; i++){
             this.bombs[i].update();
+        }
         for (i = 0; i < this.audios.length; i++) {
             if (this.audios[i].ended === true)
                 this.audios.splice(i, 1);
@@ -205,6 +206,7 @@ var Game = {
                         this.enemies.splice(k,1);    
                     }
                 }
+                this.bombs[j].audio.pause();
                 this.bombs.splice(j,1);
             }
         }

@@ -10,6 +10,7 @@ function Bomb(posX, posY)
     this.currentFrame = 0;
     this.delay = 10;
     this.currentTime = 0;
+    this.audio = createSound(bombTick);
     this.draw = function()
     {
         canvas.canvasContext.drawImage(bombAnimation[this.currentFrame], this.positionX, this.positionY);
@@ -28,8 +29,9 @@ function Bomb(posX, posY)
     };
     this.timeToExplode = function()
     {
-        if(this.timeBeforeExplode <= 0)
+        if(this.timeBeforeExplode <= 0){
             return true;
+        }
         else
             return false;
     };

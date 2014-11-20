@@ -13,7 +13,7 @@ var player = {
     lives: 3,
     bombs: 1,
     mines: 1,
-    fireInterval: 3,
+    fireInterval: 2,
     fire: false,
     doubleGuns : false,
     doubleGunsTime : 10,
@@ -74,14 +74,14 @@ var player = {
             player.fireInterval = 3;
             Game.audios.push(createSound(bulletSound));
             if (player.doubleGuns === true) {
-                Game.bullets.push(new Bullet('player', 10, player.speed + 2,
+                Game.bullets.push(new Bullet('player', 10, player.speed + 3,
                             0, player.positionX + player.width - 15, player.positionY + 10));
-                Game.bullets.push(new Bullet('player', 10, player.speed + 2,
+                Game.bullets.push(new Bullet('player', 10, player.speed + 3,
                             0, player.positionX + player.width - 15, player.positionY + player.height - 10));
 
             }
             else {
-                Game.bullets.push(new Bullet('player', 10, player.speed + 2,
+                Game.bullets.push(new Bullet('player', 10, player.speed + 3,
                             0, player.positionX + player.width - 15,
                             player.positionY + player.height / 2));
             }

@@ -12,6 +12,7 @@ var bgMusic = new Audio("resources/sounds/backgroundMusic.mp3");
 var bulletSound = "resources/sounds/PlayerBullet.mp3";
 var explosionSound = "resources/sounds/explosion.mp3";
 var bonus = ("resources/sounds/bonus.mp3");
+var bombTick = ("resources/sounds/bomb-tick.mp3");
 
 var GAME_STATES = { 'Menu': 0, 'Playing': 1, 'GameOver': 2 };
 var MENU_SUBSTATES = { 'None': 0, 'Instructions': 1, 'Credits': 2 };

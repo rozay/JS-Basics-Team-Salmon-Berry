@@ -21,6 +21,8 @@ function createSound(path)
     var temp = new Audio(path);
     if(path.match('explosion'))
         temp.volume = 0.15;
+    if(path.match('bomb-tick'))
+        temp.loop = true;
     temp.play();
     return temp;
 }
