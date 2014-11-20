@@ -6,10 +6,10 @@ Website: http://blueforce.ninikolov.com/
 
 
 **Team members**:
-Rositsa Popova
-Deivid Raychev
-Georgi Barov
-Nikola Nikolov
+* Rositsa Popova
+* Deivid Raychev
+* Georgi Barov
+* Nikola Nikolov
 
 
 General Requirements:
