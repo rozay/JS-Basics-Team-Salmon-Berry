@@ -22,11 +22,11 @@ You, as a team, are **free to decide** what frameworks, development tools and te
 General Requirements:
 =====================
 * **Use JavaScript** – the entire work should be implemented in JavaScript
-•	**Client-side JavaScript application**, running in Internet
-•	Ensure your application **works correctly** in the **latest versions of browsers**: Chrome, Firefox, IE, Opera, Safari
-•	You **do not need to support** old browsers like IE9
-•	**Work in team** – all team members should contribute
-•	**Do not** use **engines** or **tools** that generate JavaScript code!
+* **Client-side JavaScript application**, running in Internet
+* Ensure your application **works correctly** in the **latest versions of browsers**: Chrome, Firefox, IE, Opera, Safari
+* You **do not need to support** old browsers like IE9
+* **Work in team** – all team members should contribute
+* **Do not** use **engines** or **tools** that generate JavaScript code!
 
 Additional Requirements
 =======================
