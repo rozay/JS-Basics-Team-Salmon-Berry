@@ -2,7 +2,7 @@ function Enemy() {
     this.hitPoint = Math.round(Math.random() * 10) + 5;
     this.width = 50;
     this.height = 50;
-    this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
+    this.positionX = canvas.width + Math.round(Math.random() * canvas.width);
     this.positionY = Math.round(Math.random() * (canvas.height - 50 - STATUSBAR_HEIGHT)) + STATUSBAR_HEIGHT;
     this.speed = Math.random() + Game.level / 3;
     this.typeEnemy = Math.round(Math.random() * 3);
@@ -29,7 +29,7 @@ function Enemy() {
     };
     this.outOfBoundsCheck = function () {
         if (this.positionX < 0 - this.width) {
-            this.positionX = canvas.width + Math.round(Math.random() * canvas.width * 2);
+            this.positionX = canvas.width + Math.round(Math.random() * canvas.width);
             this.positionY = Math.round(Math.random() * (canvas.height - 50 - STATUSBAR_HEIGHT)) + STATUSBAR_HEIGHT;
         }
     };
