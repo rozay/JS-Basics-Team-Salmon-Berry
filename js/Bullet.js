@@ -1,5 +1,4 @@
-function Bullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY)
-{
+function Bullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY) {
     this.hitPoint = hitPointValue;
     this.positionX = posX;
     this.positionY = posY;
@@ -8,19 +7,16 @@ function Bullet(ownerTag, hitPointValue, speedToApply, bulletType, posX, posY)
     this.speed = speedToApply;
     this.owner = ownerTag;
     this.typeBullet = bulletType;
-    this.update = function()
-    {
-        this.positionX += this.speed; 
+    this.update = function () {
+        this.positionX += this.speed;
     };
-    this.outOfBoundsCheck = function()
-    {
-        if(this.positionX > canvas.width || this.positionX < 0)
+    this.outOfBoundsCheck = function () {
+        if (this.positionX > canvas.width || this.positionX < 0)
             return true;
         else
             return false;
     };
-    this.draw = function()
-    {
+    this.draw = function () {
         canvas.canvasContext.drawImage(bulletImages[this.typeBullet], this.positionX, this.positionY);
     };
 };

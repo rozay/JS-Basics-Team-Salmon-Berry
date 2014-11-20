@@ -1,23 +1,23 @@
 var Menu =
 {
     buttons: [
-    new Button('play', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2, MENU_BUTTONS_Y),
-    new Button('instructions', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2 + (MENU_BUTTONS_WIDTH + 75), MENU_BUTTONS_Y),
-    new Button('credits', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2 + 2 * (MENU_BUTTONS_WIDTH + 75), MENU_BUTTONS_Y),
-    new Button('backToMenu', (canvas.width - MENU_BUTTONS_WIDTH) / 2, canvas.height - MENU_BUTTONS_HEIGHT - 50),
-    new Button('playAgain', (canvas.width - 2 * MENU_BUTTONS_WIDTH - 50) / 2, canvas.height / 2 + 20),
-    new Button('menu', (canvas.width - 2 * MENU_BUTTONS_WIDTH - 50) / 2 + MENU_BUTTONS_WIDTH + 50, canvas.height / 2 + 20)],
+        new Button('play', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2, MENU_BUTTONS_Y),
+        new Button('instructions', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2 + (MENU_BUTTONS_WIDTH + 75), MENU_BUTTONS_Y),
+        new Button('credits', (canvas.width - 3 * MENU_BUTTONS_WIDTH - 2 * 75) / 2 + 2 * (MENU_BUTTONS_WIDTH + 75), MENU_BUTTONS_Y),
+        new Button('backToMenu', (canvas.width - MENU_BUTTONS_WIDTH) / 2, canvas.height - MENU_BUTTONS_HEIGHT - 50),
+        new Button('playAgain', (canvas.width - 2 * MENU_BUTTONS_WIDTH - 50) / 2, canvas.height / 2 + 20),
+        new Button('menu', (canvas.width - 2 * MENU_BUTTONS_WIDTH - 50) / 2 + MENU_BUTTONS_WIDTH + 50, canvas.height / 2 + 20)],
     draw: function () {
 
         if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.None) {
-            canvas.canvasContext.drawImage(menuScreenImages['logo'][0],(canvas.width - 622) / 2, 0, 622, 350);
+            canvas.canvasContext.drawImage(menuScreenImages['logo'][0], (canvas.width - 622) / 2, 0, 622, 350);
         }
 
         for (var i = 0; i < this.buttons.length; i++) {
             if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.None && (this.buttons[i].name === 'play' || this.buttons[i].name === 'instructions' || this.buttons[i].name === 'credits')) {
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
-                                          this.buttons[i].positionX, this.buttons[i].positionY,
-                                          this.buttons[i].width, this.buttons[i].height);
+                    this.buttons[i].positionX, this.buttons[i].positionY,
+                    this.buttons[i].width, this.buttons[i].height);
 
             } else if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.Instructions && this.buttons[i].name === 'backToMenu') {
                 var count = 0;
@@ -40,8 +40,8 @@ var Menu =
                 }
 
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
-                                          this.buttons[i].positionX, this.buttons[i].positionY,
-                                          this.buttons[i].width, this.buttons[i].height);
+                    this.buttons[i].positionX, this.buttons[i].positionY,
+                    this.buttons[i].width, this.buttons[i].height);
 
             } else if (Game.gameState === GAME_STATES.Menu && Game.menuSubState === MENU_SUBSTATES.Credits && this.buttons[i].name === 'backToMenu') {
                 var names = [
@@ -61,8 +61,8 @@ var Menu =
                 }
 
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
-                                          this.buttons[i].positionX, this.buttons[i].positionY,
-                                          this.buttons[i].width, this.buttons[i].height);
+                    this.buttons[i].positionX, this.buttons[i].positionY,
+                    this.buttons[i].width, this.buttons[i].height);
 
             } else if (Game.gameState === GAME_STATES.GameOver && (this.buttons[i].name === 'playAgain' || this.buttons[i].name === 'menu')) {
                 var gameOver = 'GAME OVER!';
@@ -73,8 +73,8 @@ var Menu =
                 canvas.canvasContext.fillText(gameOver, (canvas.width - canvas.canvasContext.measureText(gameOver).width) / 2, canvas.height / 2 - 200);
                 canvas.canvasContext.fillText(score, (canvas.width - canvas.canvasContext.measureText(score).width) / 2, canvas.height / 2 - 100);
                 canvas.canvasContext.drawImage(menuScreenImages[this.buttons[i].name][this.buttons[i].version],
-                                              this.buttons[i].positionX, this.buttons[i].positionY,
-                                              this.buttons[i].width, this.buttons[i].height);
+                    this.buttons[i].positionX, this.buttons[i].positionY,
+                    this.buttons[i].width, this.buttons[i].height);
             }
         }
     }

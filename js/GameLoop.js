@@ -18,11 +18,10 @@ function update() {
 function drawEverything() {
     canvas.canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvas.canvasContext.drawImage(canvas.background, 0, 0);
-    canvas.canvasContext.drawImage(canvas.starsLayer,canvas.starsOneX,0);
+    canvas.canvasContext.drawImage(canvas.starsLayer, canvas.starsOneX, 0);
     canvas.canvasContext.drawImage(canvas.starsLayer, canvas.starsTwoX, 0);
 
-    if (Game.gameState === GAME_STATES.Menu) 
-    {
+    if (Game.gameState === GAME_STATES.Menu) {
         Menu.draw();
     } else if (Game.gameState === GAME_STATES.Playing) {
         Game.drawObjects();

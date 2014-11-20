@@ -17,13 +17,12 @@ function Enemy() {
         this.positionX = this.positionX - this.speed;
         this.positionY = this.positionY;
         this.outOfBoundsCheck()
-        if(this.timeAfterFire <= 0){
+        if (this.timeAfterFire <= 0) {
             this.timeAfterFire = this.firePeriod;
-            if(Math.round(Math.random() * 100) === 99)
-            {
+            if (Math.round(Math.random() * 100) === 99) {
                 Game.bullets.push(new Bullet('enemy', this.hitPoint, -4,
-                        1, this.positionX, 
-                        this.positionY + this.height / 2 - 4));
+                    1, this.positionX,
+                    this.positionY + this.height / 2 - 4));
             }
         }
     };
