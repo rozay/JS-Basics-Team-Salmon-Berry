@@ -12,13 +12,6 @@ Georgi Barov
 Nikola Nikolov
 
 
-
-Teamwork Project Assignment for the JavaScript Basics Course @ SoftUni 
-======================================================================
-
-Design and implement **a client-side JavaScript game** by choice. It could be a well-known game like Chess, Backgammon, Solitaire, Minesweeper, Tetris, Xonix, Bridge-Belote or any jumping game (Super Mario, Bomberman etc.) or a game designed by your team.
-You, as a team, are **free to decide** what frameworks, development tools and team collaboration tools will use. You might perform live meetings in SoftUni or at some other location, online meetings, use chat systems, organize mailing lists, Facebook groups, use project management tools, source control tools and any other technical and non-technical resources to build your project, but please **work in team**. Each team member should be able to **prove his or her contribution** at the project live defense. Remember that each team member will get **equal score** at the project public defense.
-
 General Requirements:
 =====================
 * **Use JavaScript** – the entire work should be implemented in JavaScript
@@ -58,6 +51,7 @@ Each team will have to deliver a **public defense** of its work in front of the 
 * Explain how each team member has **contributed**.
 * Show the **commits logs** to confirm that team member have contributed.
 * Optionally you might prepare a **presentation** (3-4 slides).
+
 Please be **strict in timing!** Be **well prepared** for presenting maximum of your work for minimum time. Bring your own laptop. Test it preliminary with the multimedia projector. Open the project assets beforehand to save time. You have 10 minutes, no more.
 
 Assessment Criteria
