@@ -30,43 +30,43 @@ General Requirements:
 
 Additional Requirements
 =======================
-•	Follow the **best practices** for producing **high-quality code**: correct naming, correct formatting, etc.
+* Follow the **best practices** for producing **high-quality code**: correct naming, correct formatting, etc.
 
 Optional Requirements
 =====================
 If you have a chance, time and a suitable situation, you might add some of the following to your project:
-•	Use the **HTML5 canvas** – or a Canvas framework like KineticJS, paper.js or other
-•	Use SVG – or a **SVG** framework like Raphael JS or other 
-•	Create **animations** – either for the canvas, SVG or both
-•	Use **DOM manipulations** like DOM API or jQuery
+* Use the **HTML5 canvas** – or a Canvas framework like KineticJS, paper.js or other
+* Use SVG – or a **SVG** framework like Raphael JS or other 
+* Create **animations** – either for the canvas, SVG or both
+* Use **DOM manipulations** like DOM API or jQuery
 
 Deliverables
 ============
 Put the following in a **ZIP archive** and submit it (each team member submits the same file):
-•	The complete **source code** of your project.
-•	A **presentation** of your project (e.g. PowerPoint slides) or other **brief documentation** (1-2 pages) of your project. It should provide the following information:
-	o	Project name and purpose – what you have created?
-	o	Team name, list of team members
-	o	Contributions of each team member
-•	Any other information (optionally)
+* The complete **source code** of your project.
+* A **presentation** of your project (e.g. PowerPoint slides) or other **brief documentation** (1-2 pages) of your project. It should provide the following information:
+    -	Project name and purpose – what you have created?
+    -	Team name, list of team members
+    -	Contributions of each team member
+* Any other information (optionally)
 
 Public Project Defense
 ======================
 Each team will have to deliver a **public defense** of its work in front of the other students, trainers and assistants. Teams will have **only 10 minutes** for the following:
-•	**Demonstrate the** application (very shortly).
-•	Show the **source code** and explain how it works.
-•	Explain how each team member has **contributed**.
-•	Show the **commits logs** to confirm that team member have contributed.
-•	Optionally you might prepare a **presentation** (3-4 slides).
+* **Demonstrate the** application (very shortly).
+* Show the **source code** and explain how it works.
+* Explain how each team member has **contributed**.
+* Show the **commits logs** to confirm that team member have contributed.
+* Optionally you might prepare a **presentation** (3-4 slides).
 Please be **strict in timing!** Be **well prepared** for presenting maximum of your work for minimum time. Bring your own laptop. Test it preliminary with the multimedia projector. Open the project assets beforehand to save time. You have 10 minutes, no more.
 
 Assessment Criteria
 ===================
-•	**Overview** (technical implementation, layout, design, usability) – 0…5
-•	**Functionality** (rich functionality and higher complexity are scored higher) – 0…5
-•	**Code quality** (correct naming, code formatting, separation of concerns, etc.) – 0…2
-•	**Team work** (GitHub used; each team member contributed in 5 different days) – 0…3
-•	**Bonus** – 0…2
+* **Overview** (technical implementation, layout, design, usability) – 0…5
+* **Functionality** (rich functionality and higher complexity are scored higher) – 0…5
+* **Code quality** (correct naming, code formatting, separation of concerns, etc.) – 0…2
+* **Team work** (GitHub used; each team member contributed in 5 different days) – 0…3
+* **Bonus** – 0…2
 
 Give Feedback about Your Teammates
 ==================================
